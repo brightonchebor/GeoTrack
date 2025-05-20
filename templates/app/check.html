@@ -1,72 +1,114 @@
-{% extends "./base.html" %} {% block content %}
-<style>
-  #map {
-    height: 300px;
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 25px;
-  }
+{% extends "./base.html" %} 
 
-  .clock-buttons button {
-    width: 48%;
-    min-width: 140px;
-  }
-
-  .countdown-box {
-    font-size: 1.5rem;
-    font-weight: 500;
-    margin-top: 20px;
-    color: #333;
-  }
-</style>
-<!-- Clock In/Out Section -->
-<section class="py-80">
-  <div class="container">
+{% block content %}
+<!-- Attendance Check-In/Out Section -->
+<section class="feature_2 bg-light pt-105 pb-45 text-center">
+  <div class="container px-xl-0">
     <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6 text-center">
-        <h2 class="mb-35">Track Your Workday</h2>
-
-        <!-- Map Box -->
-        <div id="map"></div>
-
-        <!-- Buttons -->
-        <div class="clock-buttons d-flex justify-content-between mb-30">
-          <button class="btn btn-success">Clock In</button>
-          <button class="btn btn-danger">Clock Out</button>
+      <div class="col-xl-8 col-lg-10">
+        <h2 class="small" data-aos-duration="600" data-aos="fade-down">
+          Attendance Portal
+        </h2>
+        <div class="mt-35 mb-65 f-22 color-heading text-adaptive description" data-aos="fade-down" data-aos-delay="300">
+          Your attendance is tied to your current location. Please ensure location services are enabled and you're within the allowed area.
         </div>
+      </div>
 
-        <!-- Countdown Placeholder -->
-        <div class="countdown-box">
-          Time Tracked: <span id="timer">00:00:00</span>
+      <!-- User & Location Info -->
+      <div class="col-xl-6 col-lg-8 mb-30" data-aos="fade-up" data-aos-delay="600">
+        <div class="p-4 bg-white rounded shadow-sm text-left">
+          <h5 class="mb-3">Welcome, John Doe</h5>
+          <p class="mb-2">Status: 
+            <span class="badge bg-success text-white">Inside Allowed Zone</span>
+          </p>
+          <p class="mb-2">Current Time: <strong>09:45 AM</strong></p>
+          <p class="mb-2">GPS Accuracy: <strong>±12 meters</strong></p>
+          <p class="mb-4">Location: 6.5244° N, 3.3792° E</p>
+
+          <!-- Check In/Out Button -->
+          <button type="button" class="btn btn-primary w-100">
+            Check In
+          </button>
+        </div>
+      </div>
+
+      <!-- Today's Attendance Log -->
+      <div class="col-xl-6 col-lg-8 mb-30" data-aos="fade-up" data-aos-delay="900">
+        <div class="p-4 bg-white rounded shadow-sm text-left">
+          <h5 class="mb-3">Today's Log</h5>
+          <p class="mb-2">Check-In Time: <strong>—</strong></p>
+          <p class="mb-2">Check-Out Time: <strong>—</strong></p>
+          <p class="mb-0">Total Time: <strong>—</strong></p>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<!-- Footer -->
-<!-- Paste your existing responsive footer here -->
-
-<!-- Scripts -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-  // Leaflet Map Init
-  const map = L.map("map").setView([0, 0], 2); // Default view
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors",
-  }).addTo(map);
-
-  // Countdown logic (simple timer example)
-  let seconds = 0;
-  function formatTime(sec) {
-    const h = String(Math.floor(sec / 3600)).padStart(2, "0");
-    const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
-    const s = String(sec % 60).padStart(2, "0");
-    return `${h}:${m}:${s}`;
-  }
-  setInterval(() => {
-    seconds++;
-    document.getElementById("timer").textContent = formatTime(seconds);
-  }, 1000);
-</script>
 {% endblock content %}
+
+
+{% comment %} <!-- Attendance Check-In/Out Section -->
+<section class="feature_2 bg-light pt-105 pb-45 text-center">
+  <div class="container px-xl-0">
+    <div class="row justify-content-center">
+      <div class="col-xl-8 col-lg-10">
+        <h2 class="small" data-aos-duration="600" data-aos="fade-down">
+          Attendance Portal
+        </h2>
+        <div class="mt-35 mb-65 f-22 color-heading text-adaptive description" data-aos="fade-down" data-aos-delay="300">
+          Your attendance is tied to your current location. Please ensure location services are enabled and you're within the allowed area.
+        </div>
+      </div>
+
+      <!-- User & Location Info -->
+      <div class="col-xl-6 col-lg-8 mb-30" data-aos="fade-up" data-aos-delay="600">
+        <div class="p-4 bg-white rounded shadow-sm text-left">
+          <h5 class="mb-3">Welcome, {{ user.name }}</h5>
+          <p class="mb-2">Status: 
+            {% if is_inside_location %}
+              <span class="badge bg-success text-white">Inside Allowed Zone</span>
+            {% else %}
+              <span class="badge bg-danger text-white">Outside Allowed Zone</span>
+            {% endif %}
+          </p>
+          <p class="mb-2">Current Time: <strong>{{ current_time }}</strong></p>
+          <p class="mb-2">GPS Accuracy: <strong>±{{ gps_accuracy }} meters</strong></p>
+          <p class="mb-4">Location: {{ user_location }}</p>
+          
+          <!-- Check In/Out Button -->
+          {% if is_inside_location %}
+            <form method="POST" action="/attendance">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="{{ 'check_out' if is_checked_in else 'check_in' }}">
+              <button type="submit" class="btn btn-primary w-100">
+                {{ 'Check Out' if is_checked_in else 'Check In' }}
+              </button>
+            </form>
+          {% else %}
+            <button class="btn btn-secondary w-100" disabled>
+              Move closer to check {{ 'out' if is_checked_in else 'in' }}
+            </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Today's Attendance Log -->
+      <div class="col-xl-6 col-lg-8 mb-30" data-aos="fade-up" data-aos-delay="900">
+        <div class="p-4 bg-white rounded shadow-sm text-left">
+          <h5 class="mb-3">Today's Log</h5>
+          {% if attendance_log %}
+            <p class="mb-2">Check-In Time: <strong>{{ attendance_log.check_in }}</strong></p>
+            {% if attendance_log.check_out %}
+              <p class="mb-2">Check-Out Time: <strong>{{ attendance_log.check_out }}</strong></p>
+              <p class="mb-0">Total Time: <strong>{{ attendance_log.total_duration }}</strong></p>
+            {% else %}
+              <p class="mb-2">Checked in for: <strong>{{ attendance_log.duration_so_far }}</strong></p>
+            {% endif %}
+          {% else %}
+            <p class="mb-0">You haven't checked in yet today.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section> {% endcomment %}
