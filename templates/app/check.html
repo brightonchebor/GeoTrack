@@ -23,7 +23,7 @@
           <div class="row mb-3">
             <div class="col-5 font-weight-medium text-secondary">Status:</div>
             <div class="col-7">
-              <span class="badge bg-success text-white px-3 py-2 rounded-pill">Inside Allowed Zone</span>
+              <span class="badge status-badge text-white px-3 py-2 rounded-pill">Inside Allowed Zone</span>
             </div>
           </div>
           
@@ -42,16 +42,16 @@
             <div class="col-7 font-weight-bold">6.5244° N, 3.3792° E</div>
           </div>
 
-          <!-- Check In/Out Buttons -->
+          <!-- Check In/Out Buttons with improved visibility -->
           <div class="row">
-            <div class="col-md-6 mb-3 mb-md-0">
-              <button type="button" class="btn btn-primary w-100 py-3" id="check-in-btn">
-                Check In
+            <div class="col-6">
+              <button type="button" class="btn btn-primary w-100 py-2 attendance-btn" id="check-in-btn">
+                <span class="attendance-btn-text">Check In</span>
               </button>
             </div>
-            <div class="col-md-6">
-              <button type="button" class="btn btn-danger w-100 py-3" id="check-out-btn">
-                Check Out
+            <div class="col-6">
+              <button type="button" class="btn btn-danger w-100 py-2 attendance-btn" id="check-out-btn">
+                <span class="attendance-btn-text">Check Out</span>
               </button>
             </div>
           </div>
@@ -81,8 +81,52 @@
       </div>
     </div>
   </div>
-  
-  <script>
+</section>
+
+<style>
+/* Targeted styles only for attendance buttons */
+.attendance-btn {
+  visibility: visible !important;
+  opacity: 1 !important;
+  transition: background-color 0.3s ease !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  display: inline-block !important;
+  width: 100% !important;
+}
+
+.attendance-btn-text {
+  visibility: visible !important;
+  display: inline-block !important;
+  width: auto !important;
+}
+
+#check-in-btn {
+  background-color: #000000 !important;
+  border-color: #000000 !important;
+  color: white !important;
+}
+
+#check-out-btn {
+  background-color: #333333 !important;
+  border-color: #333333 !important;
+  color: white !important;
+}
+
+.status-badge {
+  background-color: #000000 !important;
+}
+
+/* Ensure text inside buttons is visible */
+.attendance-btn:hover {
+  opacity: 0.8 !important;
+}
+</style>
+
+<script>
+  // Initialize current time as soon as the DOM is loaded
+  document.addEventListener('DOMContentLoaded', function() {
     // Time update function
     function updateCurrentTime() {
       const now = new Date();
@@ -97,7 +141,8 @@
       document.getElementById('current-time').textContent = timeString;
     }
     
-    // Update time every minute
+    // Update time immediately and then every minute
+    updateCurrentTime();
     setInterval(updateCurrentTime, 60000);
     
     // Check-in button functionality
@@ -138,11 +183,11 @@
       // Calculate total time (simplified for demo)
       document.getElementById('total-time').textContent = '8 hours';
       
-      // Enable check-in button and disable check-out button
+      // Enable check-in button and disable check-in button
       document.getElementById('check-in-btn').disabled = false;
       this.disabled = true;
     });
-  </script>
-</section>
+  });
+</script>
 {% endblock content %}
 
