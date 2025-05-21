@@ -8,7 +8,7 @@
       <div class="col-xl-8 col-lg-10">
         <h2 class="small" data-aos-duration="600" data-aos="fade-down">
           Attendance Portal
-        </h2> 
+        </h2>
         
         <div class="mt-35 mb-65 f-22 color-heading text-adaptive description" data-aos="fade-down" data-aos-delay="300">
           Your attendance is tied to your current location. Please ensure location services are enabled and you're within the allowed area.
@@ -18,98 +18,131 @@
       <!-- User & Location Info -->
       <div class="col-xl-6 col-lg-8 mb-30" data-aos="fade-up" data-aos-delay="600">
         <div class="p-4 bg-white rounded shadow-sm text-left">
-          <h5 class="mb-3">Welcome, John Doe</h5>
-          <p class="mb-2">Status: 
-            <span class="badge bg-success text-white">Inside Allowed Zone</span>
-          </p>
-          <p class="mb-2">Current Time: <strong>09:45 AM</strong></p>
-          <p class="mb-2">GPS Accuracy: <strong>±12 meters</strong></p>
-          <p class="mb-4">Location: 6.5244° N, 3.3792° E</p>
+          <h5 class="mb-4 border-bottom pb-2">Welcome, John Doe</h5>
+          
+          <div class="row mb-3">
+            <div class="col-5 font-weight-medium text-secondary">Status:</div>
+            <div class="col-7">
+              <span class="badge bg-success text-white px-3 py-2 rounded-pill">Inside Allowed Zone</span>
+            </div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-5 font-weight-medium text-secondary">Current Time:</div>
+            <div class="col-7 font-weight-bold" id="current-time">09:45 AM</div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-5 font-weight-medium text-secondary">GPS Accuracy:</div>
+            <div class="col-7 font-weight-bold">±12 meters</div>
+          </div>
+          
+          <div class="row mb-4">
+            <div class="col-5 font-weight-medium text-secondary">Location:</div>
+            <div class="col-7 font-weight-bold">6.5244° N, 3.3792° E</div>
+          </div>
 
-          <!-- Check In/Out Button -->
-          <button type="button" class="btn btn-primary w-100">
-            Check In
-          </button>
+          <!-- Check In/Out Buttons -->
+          <div class="row">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <button type="button" class="btn btn-primary w-100 py-3" id="check-in-btn">
+                Check In
+              </button>
+            </div>
+            <div class="col-md-6">
+              <button type="button" class="btn btn-danger w-100 py-3" id="check-out-btn">
+                Check Out
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Today's Attendance Log -->
       <div class="col-xl-6 col-lg-8 mb-30" data-aos="fade-up" data-aos-delay="900">
         <div class="p-4 bg-white rounded shadow-sm text-left">
-          <h5 class="mb-3">Today's Log</h5>
-          <p class="mb-2">Check-In Time: <strong>—</strong></p>
-          <p class="mb-2">Check-Out Time: <strong>—</strong></p>
-          <p class="mb-0">Total Time: <strong>—</strong></p>
+          <h5 class="mb-4 border-bottom pb-2">Today's Log</h5>
+          
+          <div class="row mb-3">
+            <div class="col-5 font-weight-medium text-secondary">Check-In Time:</div>
+            <div class="col-7 font-weight-bold" id="check-in-time">—</div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-5 font-weight-medium text-secondary">Check-Out Time:</div>
+            <div class="col-7 font-weight-bold" id="check-out-time">—</div>
+          </div>
+          
+          <div class="row">
+            <div class="col-5 font-weight-medium text-secondary">Total Time:</div>
+            <div class="col-7 font-weight-bold" id="total-time">—</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+  
+  <script>
+    // Time update function
+    function updateCurrentTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+      const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+      
+      // Update the time display
+      document.getElementById('current-time').textContent = timeString;
+    }
+    
+    // Update time every minute
+    setInterval(updateCurrentTime, 60000);
+    
+    // Check-in button functionality
+    document.getElementById('check-in-btn').addEventListener('click', function() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+      const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+      
+      // Set check-in time
+      document.getElementById('check-in-time').textContent = timeString;
+      // Reset check-out time
+      document.getElementById('check-out-time').textContent = '—';
+      // Reset total time
+      document.getElementById('total-time').textContent = '—';
+      
+      // Disable check-in button and enable check-out button
+      this.disabled = true;
+      document.getElementById('check-out-btn').disabled = false;
+    });
+    
+    // Check-out button functionality
+    document.getElementById('check-out-btn').addEventListener('click', function() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+      const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+      
+      // Set check-out time
+      document.getElementById('check-out-time').textContent = timeString;
+      
+      // Calculate total time (simplified for demo)
+      document.getElementById('total-time').textContent = '8 hours';
+      
+      // Enable check-in button and disable check-out button
+      document.getElementById('check-in-btn').disabled = false;
+      this.disabled = true;
+    });
+  </script>
 </section>
 {% endblock content %}
 
-
-{% comment %} <!-- Attendance Check-In/Out Section -->
-<section class="feature_2 bg-light pt-105 pb-45 text-center">
-  <div class="container px-xl-0">
-    <div class="row justify-content-center">
-      <div class="col-xl-8 col-lg-10">
-        <h2 class="small" data-aos-duration="600" data-aos="fade-down">
-          Attendance Portal
-        </h2>
-        <div class="mt-35 mb-65 f-22 color-heading text-adaptive description" data-aos="fade-down" data-aos-delay="300">
-          Your attendance is tied to your current location. Please ensure location services are enabled and you're within the allowed area.
-        </div>
-      </div>
-
-      <!-- User & Location Info -->
-      <div class="col-xl-6 col-lg-8 mb-30" data-aos="fade-up" data-aos-delay="600">
-        <div class="p-4 bg-white rounded shadow-sm text-left">
-          <h5 class="mb-3">Welcome, {{ user.name }}</h5>
-          <p class="mb-2">Status: 
-            {% if is_inside_location %}
-              <span class="badge bg-success text-white">Inside Allowed Zone</span>
-            {% else %}
-              <span class="badge bg-danger text-white">Outside Allowed Zone</span>
-            {% endif %}
-          </p>
-          <p class="mb-2">Current Time: <strong>{{ current_time }}</strong></p>
-          <p class="mb-2">GPS Accuracy: <strong>±{{ gps_accuracy }} meters</strong></p>
-          <p class="mb-4">Location: {{ user_location }}</p>
-          
-          <!-- Check In/Out Button -->
-          {% if is_inside_location %}
-            <form method="POST" action="/attendance">
-              {% csrf_token %}
-              <input type="hidden" name="action" value="{{ 'check_out' if is_checked_in else 'check_in' }}">
-              <button type="submit" class="btn btn-primary w-100">
-                {{ 'Check Out' if is_checked_in else 'Check In' }}
-              </button>
-            </form>
-          {% else %}
-            <button class="btn btn-secondary w-100" disabled>
-              Move closer to check {{ 'out' if is_checked_in else 'in' }}
-            </button>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- Today's Attendance Log -->
-      <div class="col-xl-6 col-lg-8 mb-30" data-aos="fade-up" data-aos-delay="900">
-        <div class="p-4 bg-white rounded shadow-sm text-left">
-          <h5 class="mb-3">Today's Log</h5>
-          {% if attendance_log %}
-            <p class="mb-2">Check-In Time: <strong>{{ attendance_log.check_in }}</strong></p>
-            {% if attendance_log.check_out %}
-              <p class="mb-2">Check-Out Time: <strong>{{ attendance_log.check_out }}</strong></p>
-              <p class="mb-0">Total Time: <strong>{{ attendance_log.total_duration }}</strong></p>
-            {% else %}
-              <p class="mb-2">Checked in for: <strong>{{ attendance_log.duration_so_far }}</strong></p>
-            {% endif %}
-          {% else %}
-            <p class="mb-0">You haven't checked in yet today.</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-</section> {% endcomment %}

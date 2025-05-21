@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Portal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 15px;
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      color: #64748b;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 30px;
+      width: 100%;
+      max-width: 450px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card h2 {
+      font-size: 1.4rem;
+      color: #1e293b;
+      margin-bottom: 20px;
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .info-row:last-of-type {
+      border-bottom: none;
+      margin-bottom: 25px;
+    }
+    
+    .info-label {
+      color: #64748b;
+      font-weight: 500;
+    }
+    
+    .info-value {
+      color: #0f172a;
+      font-weight: 600;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: white;
+    }
+    
+    .badge-success {
+      background-color: #10b981;
+    }
+    
+    .badge-danger {
+      background-color: #ef4444;
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      background-color: #3b82f6;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    
+    .btn:hover {
+      background-color: #2563eb;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .card-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .card {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Attendance Portal</h1>
+      <p>Your attendance is tied to your current location. Please ensure location services are enabled and you're within the allowed area.</p>
+    </div>
+    
+    <div class="card-container">
+      <!-- User & Location Info Card -->
+      <div class="card">
+        <h2>Welcome, John Doe</h2>
+        
+        <div class="info-row">
+          <span class="info-label">Status:</span>
+          <span class="info-value">
+            <span class="badge badge-success">Inside Allowed Zone</span>
+          </span>
+        </div>
+        
+        <div class="info-row">
+          <span class="info-label">Current Time:</span>
+          <span class="info-value">09:45 AM</span>
+        </div>
+        
+        <div class="info-row">
+          <span class="info-label">GPS Accuracy:</span>
+          <span class="info-value">±12 meters</span>
+        </div>
+        
+        <div class="info-row">
+          <span class="info-label">Location:</span>
+          <span class="info-value">6.5244° N, 3.3792° E</span>
+        </div>
+        
+        <button class="btn">Check In</button>
+      </div>
+      
+      <!-- Today's Attendance Log Card -->
+      <div class="card">
+        <h2>Today's Log</h2>
+        
+        <div class="info-row">
+          <span class="info-label">Check-In Time:</span>
+          <span class="info-value">—</span>
+        </div>
+        
+        <div class="info-row">
+          <span class="info-label">Check-Out Time:</span>
+          <span class="info-value">—</span>
+        </div>
+        
+        <div class="info-row">
+          <span class="info-label">Total Time:</span>
+          <span class="info-value">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Time update function
+    function updateCurrentTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+      const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+      
+      // Update the time display
+      document.querySelectorAll('.info-row').forEach(row => {
+        if (row.querySelector('.info-label').textContent === 'Current Time:') {
+          row.querySelector('.info-value').textContent = timeString;
+        }
+      });
+    }
+    
+    // Update time every minute
+    setInterval(updateCurrentTime, 60000);
+    
+    // Check-in button functionality
+    const checkInButton = document.querySelector('.btn');
+    checkInButton.addEventListener('click', function() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+      const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+      
+      // Get current button state
+      const isCheckingIn = this.textContent === 'Check In';
+      
+      // Update today's log
+      document.querySelectorAll('.card').forEach(card => {
+        if (card.querySelector('h2').textContent === 'Today\'s Log') {
+          const rows = card.querySelectorAll('.info-row');
+          
+          if (isCheckingIn) {
+            // Set check-in time
+            rows[0].querySelector('.info-value').textContent = timeString;
+            // Reset check-out time
+            rows[1].querySelector('.info-value').textContent = '—';
+            // Reset total time
+            rows[2].querySelector('.info-value').textContent = '—';
+            // Change button to check out
+            this.textContent = 'Check Out';
+          } else {
+            // Set check-out time
+            rows[1].querySelector('.info-value').textContent = timeString;
+            
+            // Calculate total time
+            const checkInTime = rows[0].querySelector('.info-value').textContent;
+            const totalTime = calculateTotalTime(checkInTime, timeString);
+            rows[2].querySelector('.info-value').textContent = totalTime;
+            
+            // Change button back to check in
+            this.textContent = 'Check In';
+          }
+        }
+      });
+    });
+    
+    // Simple function to calculate time difference (for demo purposes)
+    function calculateTotalTime(startTime, endTime) {
+      // This is a simplified calculation for demo
+      // In a real app, you would parse the times properly
+      return '8 hours';
+    }
+  </script>
+</body>
+</html>
