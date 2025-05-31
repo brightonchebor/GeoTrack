@@ -2,3 +2,5 @@ db.sqlite3
 /sites
 index.html
 /MyLocator
+/templates/old
+/static/assets_old
