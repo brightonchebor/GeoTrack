@@ -1,6 +1,6 @@
 import random
 from django.core.mail import EmailMessage
-from .models import User, OneTimePassword  
+from ..app.models import User, OneTimePassword  
 from django.conf import settings
 
 
