@@ -7,5 +7,5 @@ def home(request):
 
 def check(request):
 
-    return render(render, 'app/check.html')
+    return render(request, 'app/check.html')
 
