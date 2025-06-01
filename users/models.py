@@ -1,3 +1,4 @@
+"""
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import UserManager
@@ -53,3 +54,4 @@ class OneTimePassword(models.Model):
 
     def __srt__(self):
         return f'{self.user.first_name}-passcode'   
+"""
