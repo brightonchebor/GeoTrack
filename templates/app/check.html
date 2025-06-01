@@ -16,8 +16,8 @@
       </div>
 
       <!-- User & Location Info -->
-      <div class="col-xl-6 col-lg-8 col-md-12 mb-30" data-aos="fade-up" data-aos-delay="600">
-        <div class="p-4 bg-white rounded shadow-sm text-left">
+      <div class="col-xl-6 col-lg-6 col-md-12 mb-30" data-aos="fade-up" data-aos-delay="600">
+        <div class="info-card p-4 bg-white rounded shadow-sm text-left h-100">
           <h5 class="mb-4 border-bottom pb-2">Welcome, {{ user.get_username }}</h5>
           
           <div class="row mb-3">
@@ -59,10 +59,12 @@
       </div>
 
       <!-- Map Section -->
-      <div class="col-xl-6 col-lg-8 col-md-12 mb-30" data-aos="fade-up" data-aos-delay="750">
-        <div class="p-4 bg-white rounded shadow-sm">
+      <div class="col-xl-6 col-lg-6 col-md-12 mb-30" data-aos="fade-up" data-aos-delay="750">
+        <div class="map-card p-4 bg-white rounded shadow-sm h-100">
           <h5 class="mb-4 border-bottom pb-2 text-left">Location Map</h5>
-          <div id="map" class="w-100 rounded"></div>
+          <div class="map-container">
+            <div id="map" class="w-100 rounded"></div>
+          </div>
           <div class="mt-3 text-center">
             <small class="text-muted">
               <span class="d-inline-block mr-3">
@@ -104,6 +106,29 @@
 </section>
 
 <style>
+/* Card height matching */
+.info-card, .map-card {
+  min-height: 450px;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+
+/* Map styling with proper dimensions */
+#map {
+  height: 100%;
+  min-height: 280px;
+  border: 2px solid #000;
+  border-radius: 8px;
+  flex: 1;
+}
+
 /* Targeted styles only for attendance buttons */
 .attendance-btn {
   visibility: visible !important;
@@ -157,13 +182,6 @@
   opacity: 0.6 !important;
 }
 
-/* Map styling */
-#map {
-  height: 300px;
-  border: 2px solid #000;
-  border-radius: 8px;
-}
-
 /* Badge styling for map legend */
 .badge-dark {
   background-color: #000000 !important;
@@ -174,9 +192,48 @@
 }
 
 /* Responsive adjustments */
+@media (max-width: 1199px) {
+  .info-card, .map-card {
+    min-height: 400px;
+  }
+  
+  .map-container {
+    min-height: 250px;
+  }
+  
+  #map {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 991px) {
+  .info-card, .map-card {
+    min-height: auto;
+    margin-bottom: 30px;
+  }
+  
+  .map-container {
+    min-height: 300px;
+  }
+  
+  #map {
+    min-height: 300px;
+    height: 300px;
+  }
+}
+
 @media (max-width: 768px) {
+  .info-card, .map-card {
+    min-height: auto;
+  }
+  
+  .map-container {
+    min-height: 250px;
+  }
+  
   #map {
     height: 250px;
+    min-height: 250px;
   }
   
   .container {
@@ -195,8 +252,13 @@
 }
 
 @media (max-width: 576px) {
+  .map-container {
+    min-height: 200px;
+  }
+  
   #map {
     height: 200px;
+    min-height: 200px;
   }
   
   .p-4 {
@@ -205,6 +267,21 @@
   
   .row.mb-3 {
     margin-bottom: 1rem !important;
+  }
+  
+  .info-card, .map-card {
+    padding: 1rem !important;
+  }
+}
+
+/* Ensure proper column spacing */
+@media (min-width: 1200px) {
+  .col-xl-6:first-of-type {
+    padding-right: 15px;
+  }
+  
+  .col-xl-6:last-of-type {
+    padding-left: 15px;
   }
 }
 </style>
@@ -219,16 +296,18 @@ let checkInTime = null;
 
 // Allowed location coordinates (Office/Work location)
 const ALLOWED_LOCATION = {
-  lat: -1.286389,
-  lng: 36.817223
+  lat: -4.063437,
+  lng: 39.67978
 };
 const ALLOWED_RADIUS = 100; // meters
 const GOOGLE_API_KEY = 'YOUR_API_KEY'; // Replace with your Google Maps API key
 
 // Initialize current time as soon as the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize map
-  initMap();
+  // Initialize map with a slight delay to ensure container is ready
+  setTimeout(function() {
+    initMap();
+  }, 100);
   
   // Time update function
   function updateCurrentTime() {
@@ -287,6 +366,11 @@ function initMap() {
     fillOpacity: 0.2,
     radius: ALLOWED_RADIUS
   }).addTo(map);
+
+  // Invalidate size to ensure proper rendering
+  setTimeout(function() {
+    map.invalidateSize();
+  }, 200);
 }
 
 function getCurrentLocationAndCheckIn() {
@@ -532,6 +616,15 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
 
   return R * c;
 }
+
+// Handle window resize to ensure map renders correctly
+window.addEventListener('resize', function() {
+  if (map) {
+    setTimeout(function() {
+      map.invalidateSize();
+    }, 100);
+  }
+});
 </script>
 
 <!-- Leaflet CSS and JS -->
