@@ -40,7 +40,7 @@ def register(request):
             messages.error(request, 'Password mismatch. Ensure both fields are identical')
             return redirect('users:register')
     
-    return render(request, 'users/register.html', context={})
+    return render(request, 'users/signup.html', context={})
 
 def login_view(request):
 
