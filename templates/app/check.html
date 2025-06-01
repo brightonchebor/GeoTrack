@@ -1,42 +1,60 @@
 {% extends "./base.html" %}
-
 {% block content %}
 <!-- Attendance Check-In/Out Section -->
 <section class="feature_2 bg-light pt-105 pb-45 text-center">
   <div class="container px-xl-0">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center match-height">
       <div class="col-xl-8 col-lg-10">
         <h2 class="small" data-aos-duration="600" data-aos="fade-down">
           Attendance Portal
         </h2>
-        
-        <div class="mt-35 mb-65 f-22 color-heading text-adaptive description" data-aos="fade-down" data-aos-delay="300">
-          Your attendance is tied to your current location. Please ensure location services are enabled and you're within the allowed area.
+
+        <div
+          class="mt-35 mb-65 f-22 color-heading text-adaptive description"
+          data-aos="fade-down"
+          data-aos-delay="300"
+        >
+          Your attendance is tied to your current location. Please ensure
+          location services are enabled and you're within the allowed area.
         </div>
       </div>
 
       <!-- User & Location Info -->
-      <div class="col-xl-6 col-lg-6 col-md-12 mb-30" data-aos="fade-up" data-aos-delay="600">
+      <div
+        class="col-xl-6 col-lg-6 col-md-12 mb-30"
+        data-aos="fade-up"
+        data-aos-delay="600"
+      >
         <div class="info-card p-4 bg-white rounded shadow-sm text-left h-100">
-          <h5 class="mb-4 border-bottom pb-2">Welcome, {{ user.get_username }}</h5>
-          
+          <h5 class="mb-4 border-bottom pb-2">
+            Welcome, {{ user.get_username }}
+          </h5>
+
           <div class="row mb-3">
             <div class="col-5 font-weight-medium text-secondary">Status:</div>
             <div class="col-7">
-              <span class="badge status-badge text-white px-3 py-2 rounded-pill" id="location-status">Checking Location...</span>
+              <span
+                class="badge status-badge text-white px-3 py-2 rounded-pill"
+                id="location-status"
+                >Checking Location...</span
+              >
             </div>
           </div>
-          
+
           <div class="row mb-3">
-            <div class="col-5 font-weight-medium text-secondary">Current Time:</div>
+            <div class="col-5 font-weight-medium text-secondary">
+              Current Time:
+            </div>
             <div class="col-7 font-weight-bold" id="current-time">09:45 AM</div>
           </div>
-          
+
           <div class="row mb-3">
-            <div class="col-5 font-weight-medium text-secondary">GPS Accuracy:</div>
+            <div class="col-5 font-weight-medium text-secondary">
+              GPS Accuracy:
+            </div>
             <div class="col-7 font-weight-bold" id="gps-accuracy">—</div>
           </div>
-          
+
           <div class="row mb-4">
             <div class="col-5 font-weight-medium text-secondary">Location:</div>
             <div class="col-7 font-weight-bold" id="current-location">—</div>
@@ -45,12 +63,20 @@
           <!-- Check In/Out Buttons with improved visibility -->
           <div class="row">
             <div class="col-sm-6 col-12 mb-2 mb-sm-0">
-              <button type="button" class="btn btn-primary w-100 py-2 attendance-btn" id="check-in-btn">
+              <button
+                type="button"
+                class="btn btn-primary w-100 py-2 attendance-btn"
+                id="check-in-btn"
+              >
                 <span class="attendance-btn-text">Check In</span>
               </button>
             </div>
             <div class="col-sm-6 col-12">
-              <button type="button" class="btn btn-danger w-100 py-2 attendance-btn" id="check-out-btn">
+              <button
+                type="button"
+                class="btn btn-danger w-100 py-2 attendance-btn"
+                id="check-out-btn"
+              >
                 <span class="attendance-btn-text">Check Out</span>
               </button>
             </div>
@@ -59,7 +85,11 @@
       </div>
 
       <!-- Map Section -->
-      <div class="col-xl-6 col-lg-6 col-md-12 mb-30" data-aos="fade-up" data-aos-delay="750">
+      <div
+        class="col-xl-6 col-lg-6 col-md-12 mb-30"
+        data-aos="fade-up"
+        data-aos-delay="600"
+      >
         <div class="map-card p-4 bg-white rounded shadow-sm h-100">
           <h5 class="mb-4 border-bottom pb-2 text-left">Location Map</h5>
           <div class="map-container">
@@ -79,23 +109,33 @@
       </div>
 
       <!-- Today's Attendance Log -->
-      <div class="col-xl-12 col-lg-10 mb-30" data-aos="fade-up" data-aos-delay="900">
+      <div
+        class="col-xl-12 col-lg-10 mb-30"
+        data-aos="fade-up"
+        data-aos-delay="900"
+      >
         <div class="p-4 bg-white rounded shadow-sm text-left">
           <h5 class="mb-4 border-bottom pb-2">Today's Log</h5>
-          
+
           <div class="row">
             <div class="col-md-4 col-sm-6 mb-3">
-              <div class="text-secondary font-weight-medium mb-1">Check-In Time:</div>
+              <div class="text-secondary font-weight-medium mb-1">
+                Check-In Time:
+              </div>
               <div class="font-weight-bold" id="check-in-time">—</div>
             </div>
-            
+
             <div class="col-md-4 col-sm-6 mb-3">
-              <div class="text-secondary font-weight-medium mb-1">Check-Out Time:</div>
+              <div class="text-secondary font-weight-medium mb-1">
+                Check-Out Time:
+              </div>
               <div class="font-weight-bold" id="check-out-time">—</div>
             </div>
-            
+
             <div class="col-md-4 col-sm-12 mb-3">
-              <div class="text-secondary font-weight-medium mb-1">Total Time:</div>
+              <div class="text-secondary font-weight-medium mb-1">
+                Total Time:
+              </div>
               <div class="font-weight-bold" id="total-time">—</div>
             </div>
           </div>
@@ -106,529 +146,562 @@
 </section>
 
 <style>
-/* Card height matching */
-.info-card, .map-card {
-  min-height: 450px;
-  display: flex;
-  flex-direction: column;
-}
-
-.map-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 280px;
-}
-
-/* Map styling with proper dimensions */
-#map {
-  height: 100%;
-  min-height: 280px;
-  border: 2px solid #000;
-  border-radius: 8px;
-  flex: 1;
-}
-
-/* Targeted styles only for attendance buttons */
-.attendance-btn {
-  visibility: visible !important;
-  opacity: 1 !important;
-  transition: background-color 0.3s ease !important;
-  white-space: nowrap !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  display: inline-block !important;
-  width: 100% !important;
-}
-
-.attendance-btn-text {
-  visibility: visible !important;
-  display: inline-block !important;
-  width: auto !important;
-}
-
-#check-in-btn {
-  background-color: #000000 !important;
-  border-color: #000000 !important;
-  color: white !important;
-}
-
-#check-out-btn {
-  background-color: #333333 !important;
-  border-color: #333333 !important;
-  color: white !important;
-}
-
-.status-badge {
-  background-color: #000000 !important;
-}
-
-.status-badge.inside-zone {
-  background-color: #28a745 !important;
-}
-
-.status-badge.outside-zone {
-  background-color: #dc3545 !important;
-}
-
-/* Ensure text inside buttons is visible */
-.attendance-btn:hover {
-  opacity: 0.8 !important;
-}
-
-.attendance-btn:disabled {
-  background-color: #6c757d !important;
-  border-color: #6c757d !important;
-  opacity: 0.6 !important;
-}
-
-/* Badge styling for map legend */
-.badge-dark {
-  background-color: #000000 !important;
-}
-
-.badge-secondary {
-  background-color: #6c757d !important;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1199px) {
-  .info-card, .map-card {
-    min-height: 400px;
+  /* 1) Force the row’s columns to all match the tallest sibling */
+  .row.match-height {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
   }
-  
+
+  /* 2) Make each card a flex column that grows to fill its parent column */
+  .info-card,
+  .map-card {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto;     /* grow/shrink so it fills entire column height */
+    min-height: 500px;  /* your chosen default minimum */
+  }
+
+  /* 3) The .map-container should fill the remaining vertical space, full width */
   .map-container {
-    min-height: 250px;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 350px;
+    margin-bottom: 1rem;
   }
-  
-  #map {
-    min-height: 250px;
-  }
-}
 
-@media (max-width: 991px) {
-  .info-card, .map-card {
-    min-height: auto;
-    margin-bottom: 30px;
-  }
-  
-  .map-container {
-    min-height: 300px;
-  }
-  
+  /* 4) The #map element must flex inside .map-container, and be 100% wide */
   #map {
-    min-height: 300px;
-    height: 300px;
+    flex: 1 1 auto;
+    width: 100% !important;
+    min-height: 350px;
+    border: 2px solid #000;
+    border-radius: 8px;
   }
-}
 
-@media (max-width: 768px) {
-  .info-card, .map-card {
-    min-height: auto;
-  }
-  
-  .map-container {
-    min-height: 250px;
-  }
-  
-  #map {
-    height: 250px;
-    min-height: 250px;
-  }
-  
-  .container {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-  
-  .col-5, .col-7 {
-    font-size: 14px;
-  }
-  
+  /* 5) Targeted styles only for attendance buttons */
   .attendance-btn {
-    font-size: 14px;
-    padding: 8px 12px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transition: background-color 0.3s ease !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    display: inline-block !important;
+    width: 100% !important;
   }
-}
 
-@media (max-width: 576px) {
-  .map-container {
-    min-height: 200px;
+  .attendance-btn-text {
+    visibility: visible !important;
+    display: inline-block !important;
+    width: auto !important;
   }
-  
-  #map {
-    height: 200px;
-    min-height: 200px;
-  }
-  
-  .p-4 {
-    padding: 1.5rem !important;
-  }
-  
-  .row.mb-3 {
-    margin-bottom: 1rem !important;
-  }
-  
-  .info-card, .map-card {
-    padding: 1rem !important;
-  }
-}
 
-/* Ensure proper column spacing */
-@media (min-width: 1200px) {
-  .col-xl-6:first-of-type {
-    padding-right: 15px;
+  #check-in-btn {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: white !important;
   }
-  
-  .col-xl-6:last-of-type {
-    padding-left: 15px;
+
+  #check-out-btn {
+    background-color: #333333 !important;
+    border-color: #333333 !important;
+    color: white !important;
   }
-}
+
+  .status-badge {
+    background-color: #000000 !important;
+  }
+
+  .status-badge.inside-zone {
+    background-color: #28a745 !important;
+  }
+
+  .status-badge.outside-zone {
+    background-color: #dc3545 !important;
+  }
+
+  /* Ensure text inside buttons is visible */
+  .attendance-btn:hover {
+    opacity: 0.8 !important;
+  }
+
+  .attendance-btn:disabled {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    opacity: 0.6 !important;
+  }
+
+  /* Badge styling for map legend */
+  .badge-dark {
+    background-color: #000000 !important;
+  }
+
+  .badge-secondary {
+    background-color: #6c757d !important;
+  }
+
+  /* 6) RESPONSIVE OVERRIDES — only “min-height” adjustments, no fixed heights! */
+
+  @media (max-width: 1199px) {
+    .info-card,
+    .map-card {
+      min-height: 400px;
+    }
+    .map-container,
+    #map {
+      min-height: 250px;
+    }
+  }
+
+  @media (max-width: 991px) {
+    .info-card,
+    .map-card {
+      min-height: auto;
+      margin-bottom: 30px;
+    }
+    .map-container,
+    #map {
+      min-height: 300px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .map-container,
+    #map {
+      min-height: 250px;
+    }
+
+    .container {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    .col-5,
+    .col-7 {
+      font-size: 14px;
+    }
+
+    .attendance-btn {
+      font-size: 14px;
+      padding: 8px 12px !important;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .map-container,
+    #map {
+      min-height: 200px;
+    }
+
+    .p-4 {
+      padding: 1.5rem !important;
+    }
+
+    .row.mb-3 {
+      margin-bottom: 1rem !important;
+    }
+
+    .info-card,
+    .map-card {
+      padding: 1rem !important;
+    }
+  }
+
+  /* 7) (Optional) Fine-tune column gutters on ≥1200px screens */
+  @media (min-width: 1200px) {
+    .col-xl-6:first-of-type {
+      padding-right: 15px;
+    }
+
+    .col-xl-6:last-of-type {
+      padding-left: 15px;
+    }
+  }
 </style>
 
 <script>
-// Leaflet.js setup
-let map;
-let userMarker;
-let allowedZoneMarker;
-let allowedZoneCircle;
-let checkInTime = null;
+  // Leaflet.js setup
+  let map;
+  let userMarker;
+  let allowedZoneMarker;
+  let allowedZoneCircle;
+  let checkInTime = null;
 
-// Allowed location coordinates (Office/Work location)
-const ALLOWED_LOCATION = {
-  lat: -4.063437,
-  lng: 39.67978
-};
-const ALLOWED_RADIUS = 100; // meters
-const GOOGLE_API_KEY = 'YOUR_API_KEY'; // Replace with your Google Maps API key
+  // Allowed location coordinates (Office/Work location)
+  const ALLOWED_LOCATION = {
+    lat: -4.063437,
+    lng: 39.67978,
+  };
+  const ALLOWED_RADIUS = 100; // meters
+  const GOOGLE_API_KEY = "YOUR_API_KEY"; // Replace with your Google Maps API key
 
-// Initialize current time as soon as the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize map with a slight delay to ensure container is ready
-  setTimeout(function() {
-    initMap();
-  }, 100);
-  
-  // Time update function
-  function updateCurrentTime() {
+  // Initialize current time as soon as the DOM is loaded
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize map with a slight delay to ensure container is ready
+    setTimeout(function () {
+      initMap();
+    }, 100);
+
+    // Time update function
+    function updateCurrentTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? "PM" : "AM";
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+      const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+
+      // Update the time display
+      document.getElementById("current-time").textContent = timeString;
+    }
+
+    // Update time immediately and then every minute
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 60000);
+
+    // Check-in button functionality
+    document
+      .getElementById("check-in-btn")
+      .addEventListener("click", function () {
+        getCurrentLocationAndCheckIn();
+      });
+
+    // Check-out button functionality
+    document
+      .getElementById("check-out-btn")
+      .addEventListener("click", function () {
+        getCurrentLocationAndCheckOut();
+      });
+  });
+
+  function initMap() {
+    // Initialize Leaflet map centered on allowed location
+    map = L.map("map").setView(
+      [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng],
+      16
+    );
+
+    // Add OpenStreetMap tiles
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    // Add allowed zone marker
+    allowedZoneMarker = L.marker([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], {
+      title: "Allowed Check-in Zone",
+      icon: L.divIcon({
+        html: '<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="#6c757d" stroke="#fff" stroke-width="2"/></svg>',
+        iconSize: [20, 20],
+        className: "",
+      }),
+    }).addTo(map);
+
+    // Add allowed zone circle
+    allowedZoneCircle = L.circle([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], {
+      color: "#6c757d",
+      opacity: 0.8,
+      weight: 2,
+      fillColor: "#6c757d",
+      fillOpacity: 0.2,
+      radius: ALLOWED_RADIUS,
+    }).addTo(map);
+
+    // Invalidate size to ensure proper rendering
+    setTimeout(function () {
+      map.invalidateSize();
+    }, 200);
+  }
+
+  function getCurrentLocationAndCheckIn() {
+    if ("geolocation" in navigator) {
+      document.getElementById("location-status").textContent =
+        "Getting location...";
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          handleLocationSuccess(position, "checkin");
+        },
+        function (error) {
+          handleLocationError(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000,
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  }
+
+  function getCurrentLocationAndCheckOut() {
+    if ("geolocation" in navigator) {
+      document.getElementById("location-status").textContent =
+        "Getting location...";
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          handleLocationSuccess(position, "checkout");
+        },
+        function (error) {
+          handleLocationError(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000,
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  }
+
+  function handleLocationSuccess(position, action) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    const accuracy = position.coords.accuracy;
+
+    // Reverse geocode using Google Maps Geocoding API
+    fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        let address = "Unknown location";
+        if (data.status === "OK" && data.results.length > 0) {
+          address = data.results[0].formatted_address;
+        }
+
+        // Update location display
+        document.getElementById("current-location").textContent = address;
+        document.getElementById("gps-accuracy").textContent = `±${Math.round(
+          accuracy
+        )} meters`;
+
+        // Check if user is within allowed zone
+        const distance = calculateDistance(
+          latitude,
+          longitude,
+          ALLOWED_LOCATION.lat,
+          ALLOWED_LOCATION.lng
+        );
+        const isInZone = distance <= ALLOWED_RADIUS;
+
+        // Update status
+        const statusElement = document.getElementById("location-status");
+        if (isInZone) {
+          statusElement.textContent = "Inside Allowed Zone";
+          statusElement.className =
+            "badge status-badge inside-zone text-white px-3 py-2 rounded-pill";
+        } else {
+          statusElement.textContent = "Outside Allowed Zone";
+          statusElement.className =
+            "badge status-badge outside-zone text-white px-3 py-2 rounded-pill";
+        }
+
+        // Update user marker on map
+        if (userMarker) {
+          userMarker.remove();
+        }
+
+        userMarker = L.marker([latitude, longitude], {
+          title: "Your Current Location",
+          icon: L.divIcon({
+            html: '<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="#000000" stroke="#fff" stroke-width="2"/></svg>',
+            iconSize: [20, 20],
+            className: "",
+          }),
+        }).addTo(map);
+
+        // Center map between user location and allowed zone
+        const bounds = L.latLngBounds([
+          [latitude, longitude],
+          [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng],
+        ]);
+        map.fitBounds(bounds, { maxZoom: 16 });
+
+        // Handle check-in/check-out
+        if (isInZone) {
+          if (action === "checkin") {
+            performCheckIn();
+            // Save check-in to backend
+            saveCheckInOut(latitude, longitude, address, "checkin");
+          } else if (action === "checkout") {
+            performCheckOut();
+            // Save check-out to backend
+            saveCheckInOut(latitude, longitude, address, "checkout");
+          }
+        } else {
+          alert(
+            `You are ${Math.round(
+              distance
+            )}m away from the allowed zone. Please move closer to check ${
+              action === "checkin" ? "in" : "out"
+            }.`
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Geocoding error:", error);
+        document.getElementById(
+          "current-location"
+        ).textContent = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
+        document.getElementById("gps-accuracy").textContent = `±${Math.round(
+          accuracy
+        )} meters`;
+        alert("Failed to fetch address. Using coordinates instead.");
+      });
+  }
+
+  function handleLocationError(error) {
+    let errorMessage = "";
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        errorMessage =
+          "Location access denied. Please enable location services.";
+        break;
+      case error.POSITION_UNAVAILABLE:
+        errorMessage = "Location information is unavailable.";
+        break;
+      case error.TIMEOUT:
+        errorMessage = "Location request timed out.";
+        break;
+      default:
+        errorMessage = "An unknown error occurred.";
+        break;
+    }
+
+    document.getElementById("location-status").textContent = "Location Error";
+    document.getElementById("location-status").className =
+      "badge status-badge outside-zone text-white px-3 py-2 rounded-pill";
+    alert(errorMessage);
+  }
+
+  function performCheckIn() {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const ampm = hours >= 12 ? "PM" : "AM";
     const formattedHours = hours % 12 || 12;
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
     const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
-    
-    // Update the time display
-    document.getElementById('current-time').textContent = timeString;
+
+    // Set check-in time
+    checkInTime = now;
+    document.getElementById("check-in-time").textContent = timeString;
+    // Reset check-out time
+    document.getElementById("check-out-time").textContent = "—";
+    // Reset total time
+    document.getElementById("total-time").textContent = "—";
+
+    // Disable check-in button and enable check-out button
+    document.getElementById("check-in-btn").disabled = true;
+    document.getElementById("check-out-btn").disabled = false;
+
+    alert("Successfully checked in!");
   }
-  
-  // Update time immediately and then every minute
-  updateCurrentTime();
-  setInterval(updateCurrentTime, 60000);
-  
-  // Check-in button functionality
-  document.getElementById('check-in-btn').addEventListener('click', function() {
-    getCurrentLocationAndCheckIn();
-  });
-  
-  // Check-out button functionality
-  document.getElementById('check-out-btn').addEventListener('click', function() {
-    getCurrentLocationAndCheckOut();
-  });
-});
 
-function initMap() {
-  // Initialize Leaflet map centered on allowed location
-  map = L.map('map').setView([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], 16);
+  function performCheckOut() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
 
-  // Add OpenStreetMap tiles
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
+    // Set check-out time
+    document.getElementById("check-out-time").textContent = timeString;
 
-  // Add allowed zone marker
-  allowedZoneMarker = L.marker([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], {
-    title: "Allowed Check-in Zone",
-    icon: L.divIcon({
-      html: '<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="#6c757d" stroke="#fff" stroke-width="2"/></svg>',
-      iconSize: [20, 20],
-      className: ''
-    })
-  }).addTo(map);
+    // Calculate total time if check-in time exists
+    if (checkInTime) {
+      const totalMinutes = Math.round((now - checkInTime) / (1000 * 60));
+      const totalHours = Math.floor(totalMinutes / 60);
+      const remainingMinutes = totalMinutes % 60;
 
-  // Add allowed zone circle
-  allowedZoneCircle = L.circle([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], {
-    color: '#6c757d',
-    opacity: 0.8,
-    weight: 2,
-    fillColor: '#6c757d',
-    fillOpacity: 0.2,
-    radius: ALLOWED_RADIUS
-  }).addTo(map);
-
-  // Invalidate size to ensure proper rendering
-  setTimeout(function() {
-    map.invalidateSize();
-  }, 200);
-}
-
-function getCurrentLocationAndCheckIn() {
-  if ("geolocation" in navigator) {
-    document.getElementById('location-status').textContent = 'Getting location...';
-    navigator.geolocation.getCurrentPosition(
-      function(position) {
-        handleLocationSuccess(position, 'checkin');
-      },
-      function(error) {
-        handleLocationError(error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
-      }
-    );
-  } else {
-    alert("Geolocation is not supported by your browser.");
-  }
-}
-
-function getCurrentLocationAndCheckOut() {
-  if ("geolocation" in navigator) {
-    document.getElementById('location-status').textContent = 'Getting location...';
-    navigator.geolocation.getCurrentPosition(
-      function(position) {
-        handleLocationSuccess(position, 'checkout');
-      },
-      function(error) {
-        handleLocationError(error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
-      }
-    );
-  } else {
-    alert("Geolocation is not supported by your browser.");
-  }
-}
-
-function handleLocationSuccess(position, action) {
-  const latitude = position.coords.latitude;
-  const longitude = position.coords.longitude;
-  const accuracy = position.coords.accuracy;
-
-  // Reverse geocode using Google Maps Geocoding API
-  fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`)
-    .then(response => response.json())
-    .then(data => {
-      let address = 'Unknown location';
-      if (data.status === 'OK' && data.results.length > 0) {
-        address = data.results[0].formatted_address;
-      }
-
-      // Update location display
-      document.getElementById('current-location').textContent = address;
-      document.getElementById('gps-accuracy').textContent = `±${Math.round(accuracy)} meters`;
-
-      // Check if user is within allowed zone
-      const distance = calculateDistance(latitude, longitude, ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng);
-      const isInZone = distance <= ALLOWED_RADIUS;
-
-      // Update status
-      const statusElement = document.getElementById('location-status');
-      if (isInZone) {
-        statusElement.textContent = 'Inside Allowed Zone';
-        statusElement.className = 'badge status-badge inside-zone text-white px-3 py-2 rounded-pill';
+      let totalTimeString;
+      if (totalHours > 0) {
+        totalTimeString = `${totalHours}h ${remainingMinutes}m`;
       } else {
-        statusElement.textContent = 'Outside Allowed Zone';
-        statusElement.className = 'badge status-badge outside-zone text-white px-3 py-2 rounded-pill';
+        totalTimeString = `${remainingMinutes}m`;
       }
 
-      // Update user marker on map
-      if (userMarker) {
-        userMarker.remove();
-      }
-      
-      userMarker = L.marker([latitude, longitude], {
-        title: "Your Current Location",
-        icon: L.divIcon({
-          html: '<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="#000000" stroke="#fff" stroke-width="2"/></svg>',
-          iconSize: [20, 20],
-          className: ''
-        })
-      }).addTo(map);
-
-      // Center map between user location and allowed zone
-      const bounds = L.latLngBounds([
-        [latitude, longitude],
-        [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng]
-      ]);
-      map.fitBounds(bounds, { maxZoom: 16 });
-
-      // Handle check-in/check-out
-      if (isInZone) {
-        if (action === 'checkin') {
-          performCheckIn();
-          // Save check-in to backend
-          saveCheckInOut(latitude, longitude, address, 'checkin');
-        } else if (action === 'checkout') {
-          performCheckOut();
-          // Save check-out to backend
-          saveCheckInOut(latitude, longitude, address, 'checkout');
-        }
-      } else {
-        alert(`You are ${Math.round(distance)}m away from the allowed zone. Please move closer to check ${action === 'checkin' ? 'in' : 'out'}.`);
-      }
-    })
-    .catch(error => {
-      console.error('Geocoding error:', error);
-      document.getElementById('current-location').textContent = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
-      document.getElementById('gps-accuracy').textContent = `±${Math.round(accuracy)} meters`;
-      alert('Failed to fetch address. Using coordinates instead.');
-    });
-}
-
-function handleLocationError(error) {
-  let errorMessage = '';
-  switch (error.code) {
-    case error.PERMISSION_DENIED:
-      errorMessage = "Location access denied. Please enable location services.";
-      break;
-    case error.POSITION_UNAVAILABLE:
-      errorMessage = "Location information is unavailable.";
-      break;
-    case error.TIMEOUT:
-      errorMessage = "Location request timed out.";
-      break;
-    default:
-      errorMessage = "An unknown error occurred.";
-      break;
-  }
-  
-  document.getElementById('location-status').textContent = 'Location Error';
-  document.getElementById('location-status').className = 'badge status-badge outside-zone text-white px-3 py-2 rounded-pill';
-  alert(errorMessage);
-}
-
-function performCheckIn() {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const formattedHours = hours % 12 || 12;
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
-  
-  // Set check-in time
-  checkInTime = now;
-  document.getElementById('check-in-time').textContent = timeString;
-  // Reset check-out time
-  document.getElementById('check-out-time').textContent = '—';
-  // Reset total time
-  document.getElementById('total-time').textContent = '—';
-  
-  // Disable check-in button and enable check-out button
-  document.getElementById('check-in-btn').disabled = true;
-  document.getElementById('check-out-btn').disabled = false;
-  
-  alert('Successfully checked in!');
-}
-
-function performCheckOut() {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const formattedHours = hours % 12 || 12;
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
-  
-  // Set check-out time
-  document.getElementById('check-out-time').textContent = timeString;
-  
-  // Calculate total time if check-in time exists
-  if (checkInTime) {
-    const totalMinutes = Math.round((now - checkInTime) / (1000 * 60));
-    const totalHours = Math.floor(totalMinutes / 60);
-    const remainingMinutes = totalMinutes % 60;
-    
-    let totalTimeString;
-    if (totalHours > 0) {
-      totalTimeString = `${totalHours}h ${remainingMinutes}m`;
+      document.getElementById("total-time").textContent = totalTimeString;
     } else {
-      totalTimeString = `${remainingMinutes}m`;
+      document.getElementById("total-time").textContent = "—";
     }
-    
-    document.getElementById('total-time').textContent = totalTimeString;
-  } else {
-    document.getElementById('total-time').textContent = '—';
-  }
-  
-  // Enable check-in button and disable check-out button
-  document.getElementById('check-in-btn').disabled = false;
-  document.getElementById('check-out-btn').disabled = true;
-  
-  alert('Successfully checked out!');
-}
 
-// Save check-in/out to backend
-function saveCheckInOut(latitude, longitude, address, action) {
-  fetch('{% url "app:check" %}', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': '{{ csrf_token }}'
-    },
-    body: JSON.stringify({
-      latitude: latitude,
-      longitude: longitude,
-      address: address,
-      action: action
+    // Enable check-in button and disable check-out button
+    document.getElementById("check-in-btn").disabled = false;
+    document.getElementById("check-out-btn").disabled = true;
+
+    alert("Successfully checked out!");
+  }
+
+  // Save check-in/out to backend
+  function saveCheckInOut(latitude, longitude, address, action) {
+    fetch('{% url "app:check" %}', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({
+        latitude: latitude,
+        longitude: longitude,
+        address: address,
+        action: action,
+      }),
     })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status !== 'success') {
-      alert('Error saving ' + action + ': ' + (data.message || 'Unknown error'));
-    }
-  })
-  .catch(error => {
-    console.error('Error saving ' + action + ':', error);
-    alert('Failed to save ' + action + '. Please try again.');
-  });
-}
-
-// Calculate distance between two coordinates in meters
-function calculateDistance(lat1, lng1, lat2, lng2) {
-  const R = 6371e3; // Earth's radius in meters
-  const φ1 = lat1 * Math.PI/180;
-  const φ2 = lat2 * Math.PI/180;
-  const Δφ = (lat2-lat1) * Math.PI/180;
-  const Δλ = (lng2-lng1) * Math.PI/180;
-
-  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-  return R * c;
-}
-
-// Handle window resize to ensure map renders correctly
-window.addEventListener('resize', function() {
-  if (map) {
-    setTimeout(function() {
-      map.invalidateSize();
-    }, 100);
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status !== "success") {
+          alert(
+            "Error saving " + action + ": " + (data.message || "Unknown error")
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error saving " + action + ":", error);
+        alert("Failed to save " + action + ". Please try again.");
+      });
   }
-});
+
+  // Calculate distance between two coordinates in meters
+  function calculateDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371e3; // Earth's radius in meters
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  }
+
+  // Handle window resize to ensure map renders correctly
+  window.addEventListener("resize", function () {
+    if (map) {
+      setTimeout(function () {
+        map.invalidateSize();
+      }, 100);
+    }
+  });
 </script>
 
 <!-- Leaflet CSS and JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 {% endblock content %}
