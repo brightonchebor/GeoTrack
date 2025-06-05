@@ -108,6 +108,8 @@ def attendance_check(request):
             attendance_obj.checkin_time = timezone.now()
             attendance_obj.checkin_latitude = latitude
             attendance_obj.checkin_longitude = longitude
+            attendance_obj.checkin_address = address
+
 
         else:  # action == "checkout"
             if not attendance_obj.checkin_time:
@@ -123,6 +125,7 @@ def attendance_check(request):
             attendance_obj.clock_out_time = timezone.now()
             attendance_obj.clock_out_location_latitude = latitude
             attendance_obj.clock_out_location_longitude = longitude
+            attendance_obj.checkout_address = address
 
         attendance_obj.save()
 
@@ -137,6 +140,9 @@ def attendance_check(request):
             "checkin_longitude": attendance_obj.checkin_longitude,
             "checkout_latitude": attendance_obj.checkout_latitude,
             "checkout_longitude": attendance_obj.checkout_longitude,
+            "checkin_address": attendance_obj.checkin_address,
+            "checkout_address": attendance_obj.checkout_address,
+
         }
 
         # HTTP 200 if just created; 202 if updating an existing record
