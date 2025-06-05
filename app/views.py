@@ -51,7 +51,7 @@ def attendance_check(request):
         # 3) Validate action
         if action not in ("checkin", "checkout"):
             return HttpResponseBadRequest(
-                json.dumps({"error": "Action must be 'clock_in' or 'clock_out'."}),
+                json.dumps({"error": "Action must be 'checkin' or 'checkout'."}),
                 content_type="application/json",
             )
 
@@ -97,24 +97,24 @@ def attendance_check(request):
             date=today,
         )
 
-        # 8) Perform clock_in / clock_out logic
-        if action == "clock_in":
+        # 8) Perform checkin / checkout logic
+        if action == "checkin":
             if attendance_obj.clock_in_time:
                 return HttpResponseBadRequest(
                     json.dumps({"error": "You have already clocked in today."}),
                     content_type="application/json",
                 )
-            attendance_obj.clock_in_time = timezone.now()
-            attendance_obj.clock_in_location_latitude = latitude
-            attendance_obj.clock_in_location_longitude = longitude
+            attendance_obj.checkin_time = timezone.now()
+            attendance_obj.checkin_latitude = latitude
+            attendance_obj.checkin_longitude = longitude
 
-        else:  # action == "clock_out"
-            if not attendance_obj.clock_in_time:
+        else:  # action == "checkout"
+            if not attendance_obj.checkin_time:
                 return HttpResponseBadRequest(
                     json.dumps({"error": "You must clock in before clocking out."}),
                     content_type="application/json",
                 )
-            if attendance_obj.clock_out_time:
+            if attendance_obj.checkout_time:
                 return HttpResponseBadRequest(
                     json.dumps({"error": "You have already clocked out today."}),
                     content_type="application/json",
@@ -130,12 +130,12 @@ def attendance_check(request):
             "id": attendance_obj.id,
             "user": attendance_obj.user.id,
             "date": attendance_obj.date.isoformat(),
-            "clock_in_time": attendance_obj.clock_in_time.isoformat() if attendance_obj.clock_in_time else None,
-            "clock_out_time": attendance_obj.clock_out_time.isoformat() if attendance_obj.clock_out_time else None,
-            "clock_in_location_latitude": attendance_obj.clock_in_location_latitude,
-            "clock_in_location_longitude": attendance_obj.clock_in_location_longitude,
-            "clock_out_location_latitude": attendance_obj.clock_out_location_latitude,
-            "clock_out_location_longitude": attendance_obj.clock_out_location_longitude,
+            "clock_in_time": attendance_obj.checkin_time.isoformat() if attendance_obj.checkin_time else None,
+            "clock_out_time": attendance_obj.checkout_time.isoformat() if attendance_obj.checkout_time else None,
+            "clock_in_location_latitude": attendance_obj.checkin_latitude,
+            "clock_in_location_longitude": attendance_obj.checkin_longitude,
+            "clock_out_location_latitude": attendance_obj.checkout_latitude,
+            "clock_out_location_longitude": attendance_obj.checkout_longitude,
         }
 
         # HTTP 200 if just created; 202 if updating an existing record
