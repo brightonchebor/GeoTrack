@@ -49,7 +49,7 @@ def attendance_check(request):
         longitude = payload.get("longitude")
 
         # 3) Validate action
-        if action not in ("clock_in", "clock_out"):
+        if action not in ("checkin", "checkout"):
             return HttpResponseBadRequest(
                 json.dumps({"error": "Action must be 'clock_in' or 'clock_out'."}),
                 content_type="application/json",
