@@ -146,7 +146,7 @@
 </section>
 
 <style>
-  /* 1) Force the row’s columns to all match the tallest sibling */
+  /* 1) Force the row's columns to all match the tallest sibling */
   .row.match-height {
     display: flex;
     flex-wrap: wrap;
@@ -243,7 +243,7 @@
     background-color: #6c757d !important;
   }
 
-  /* 6) RESPONSIVE OVERRIDES — only “min-height” adjustments, no fixed heights! */
+  /* 6) RESPONSIVE OVERRIDES — only "min-height" adjustments, no fixed heights! */
 
   @media (max-width: 1199px) {
     .info-card,
@@ -322,8 +322,17 @@
   }
 </style>
 
+<!-- Mapbox GL CSS and JS -->
+<link
+  href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+  rel="stylesheet"
+/>
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+
 <script>
-  // Leaflet.js setup
+  // Mapbox setup - replace with your actual access token
+  mapboxgl.accessToken = 'pk.eyJ1IjoiYnJpZ2h0b25jaGVib3IiLCJhIjoiY21iaHpyb252MDBlMDJscjA3eGxuMHJwaSJ9.16nclI6ijpOPraW9Zzyu4Q';
+  
   let map;
   let userMarker;
   let allowedZoneMarker;
@@ -332,11 +341,10 @@
 
   // Allowed location coordinates (Office/Work location)
   const ALLOWED_LOCATION = {
-    lat: -4.063437,
-    lng: 39.67978,
+    lat: -1.286389,
+    lng: 36.817223,
   };
-  const ALLOWED_RADIUS = 100; // meters
-  const GOOGLE_API_KEY = "YOUR_API_KEY"; // Replace with your Google Maps API key
+  const ALLOWED_RADIUS = 30; // meters
 
   // Initialize current time as soon as the DOM is loaded
   document.addEventListener("DOMContentLoaded", function () {
@@ -379,48 +387,72 @@
   });
 
   function initMap() {
-    // Initialize Leaflet map centered on allowed location
-    map = L.map("map").setView(
-      [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng],
-      16
-    );
-
-    // Add OpenStreetMap tiles
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    // Initialize Mapbox map centered on allowed location
+    map = new mapboxgl.Map({
+      container: "map",
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat], // [longitude, latitude]
+      zoom: 18,
+      maxZoom: 22
+    });
 
     // Add allowed zone marker
-    allowedZoneMarker = L.marker([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], {
-      title: "Allowed Check-in Zone",
-      icon: L.divIcon({
-        html: '<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="#6c757d" stroke="#fff" stroke-width="2"/></svg>',
-        iconSize: [20, 20],
-        className: "",
-      }),
-    }).addTo(map);
+    allowedZoneMarker = new mapboxgl.Marker({
+      color: '#6c757d'
+    })
+      .setLngLat([ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat])
+      .setPopup(new mapboxgl.Popup({ offset: 25 }).setText("Allowed Check-in Zone"))
+      .addTo(map);
 
-    // Add allowed zone circle
-    allowedZoneCircle = L.circle([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], {
-      color: "#6c757d",
-      opacity: 0.8,
-      weight: 2,
-      fillColor: "#6c757d",
-      fillOpacity: 0.2,
-      radius: ALLOWED_RADIUS,
-    }).addTo(map);
+    // Create allowed zone circle using a GeoJSON source
+    map.on('load', function() {
+      // Add allowed zone circle
+      map.addSource('allowed-zone', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat]
+          }
+        }
+      });
 
-    // Invalidate size to ensure proper rendering
+      map.addLayer({
+        id: 'allowed-zone-circle',
+        type: 'circle',
+        source: 'allowed-zone',
+        paint: {
+          'circle-radius': {
+            stops: [
+              [0, 0],
+              [20, metersToPixelsAtMaxZoom(ALLOWED_RADIUS, ALLOWED_LOCATION.lat)]
+            ],
+            base: 2
+          },
+          'circle-color': '#6c757d',
+          'circle-opacity': 0.2,
+          'circle-stroke-color': '#6c757d',
+          'circle-stroke-width': 2,
+          'circle-stroke-opacity': 0.8
+        }
+      });
+    });
+
+    // Resize map when container size changes
     setTimeout(function () {
-      map.invalidateSize();
+      map.resize();
     }, 200);
+  }
+
+  // Helper function to convert meters to pixels at max zoom
+  function metersToPixelsAtMaxZoom(meters, latitude) {
+    return meters / 0.075 / Math.cos(latitude * Math.PI / 180);
   }
 
   function getCurrentLocationAndCheckIn() {
     if ("geolocation" in navigator) {
-      document.getElementById("location-status").textContent =
-        "Getting location...";
+      document.getElementById("location-status").textContent = "Getting location...";
       navigator.geolocation.getCurrentPosition(
         function (position) {
           handleLocationSuccess(position, "checkin");
@@ -441,8 +473,7 @@
 
   function getCurrentLocationAndCheckOut() {
     if ("geolocation" in navigator) {
-      document.getElementById("location-status").textContent =
-        "Getting location...";
+      document.getElementById("location-status").textContent = "Getting location...";
       navigator.geolocation.getCurrentPosition(
         function (position) {
           handleLocationSuccess(position, "checkout");
@@ -466,15 +497,15 @@
     const longitude = position.coords.longitude;
     const accuracy = position.coords.accuracy;
 
-    // Reverse geocode using Google Maps Geocoding API
+    // Reverse geocode using Mapbox Geocoding API
     fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`
     )
       .then((response) => response.json())
       .then((data) => {
         let address = "Unknown location";
-        if (data.status === "OK" && data.results.length > 0) {
-          address = data.results[0].formatted_address;
+        if (data.features && data.features.length > 0) {
+          address = data.features[0].place_name;
         }
 
         // Update location display
@@ -509,21 +540,21 @@
           userMarker.remove();
         }
 
-        userMarker = L.marker([latitude, longitude], {
-          title: "Your Current Location",
-          icon: L.divIcon({
-            html: '<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="#000000" stroke="#fff" stroke-width="2"/></svg>',
-            iconSize: [20, 20],
-            className: "",
-          }),
-        }).addTo(map);
+        userMarker = new mapboxgl.Marker({
+          color: '#000000'
+        })
+          .setLngLat([longitude, latitude])
+          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText("Your Current Location"))
+          .addTo(map);
 
-        // Center map between user location and allowed zone
-        const bounds = L.latLngBounds([
-          [latitude, longitude],
-          [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng],
-        ]);
-        map.fitBounds(bounds, { maxZoom: 16 });
+        // Fit map to show both user location and allowed zone
+        const bounds = new mapboxgl.LngLatBounds();
+        bounds.extend([longitude, latitude]);
+        bounds.extend([ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat]);
+        map.fitBounds(bounds, { 
+          padding: 50,
+          maxZoom: 17
+        });
 
         // Handle check-in/check-out
         if (isInZone) {
@@ -692,16 +723,10 @@
   window.addEventListener("resize", function () {
     if (map) {
       setTimeout(function () {
-        map.invalidateSize();
+        map.resize();
       }, 100);
     }
   });
 </script>
 
-<!-- Leaflet CSS and JS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 {% endblock content %}
