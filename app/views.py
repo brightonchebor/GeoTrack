@@ -47,6 +47,7 @@ def attendance_check(request):
         action = payload.get("action")
         latitude = payload.get("latitude")
         longitude = payload.get("longitude")
+        address = payload.get("address", "") 
 
         # 3) Validate action
         if action not in ("checkin", "checkout"):
@@ -130,12 +131,12 @@ def attendance_check(request):
             "id": attendance_obj.id,
             "user": attendance_obj.user.id,
             "date": attendance_obj.date.isoformat(),
-            "clock_in_time": attendance_obj.checkin_time.isoformat() if attendance_obj.checkin_time else None,
-            "clock_out_time": attendance_obj.checkout_time.isoformat() if attendance_obj.checkout_time else None,
-            "clock_in_location_latitude": attendance_obj.checkin_latitude,
-            "clock_in_location_longitude": attendance_obj.checkin_longitude,
-            "clock_out_location_latitude": attendance_obj.checkout_latitude,
-            "clock_out_location_longitude": attendance_obj.checkout_longitude,
+            "checkin_time": attendance_obj.checkin_time.isoformat() if attendance_obj.checkin_time else None,
+            "checkout_time": attendance_obj.checkout_time.isoformat() if attendance_obj.checkout_time else None,
+            "checkin_latitude": attendance_obj.checkin_latitude,
+            "checkin_longitude": attendance_obj.checkin_longitude,
+            "checkout_latitude": attendance_obj.checkout_latitude,
+            "checkout_longitude": attendance_obj.checkout_longitude,
         }
 
         # HTTP 200 if just created; 202 if updating an existing record
