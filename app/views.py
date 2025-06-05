@@ -102,7 +102,7 @@ def attendance_check(request):
         if action == "checkin":
             if attendance_obj.clock_in_time:
                 return HttpResponseBadRequest(
-                    json.dumps({"error": "You have already clocked in today."}),
+                    json.dumps({"error": "You have already checked in today."}),
                     content_type="application/json",
                 )
             attendance_obj.checkin_time = timezone.now()
@@ -114,12 +114,12 @@ def attendance_check(request):
         else:  # action == "checkout"
             if not attendance_obj.checkin_time:
                 return HttpResponseBadRequest(
-                    json.dumps({"error": "You must clock in before clocking out."}),
+                    json.dumps({"error": "You must check in before clocking out."}),
                     content_type="application/json",
                 )
             if attendance_obj.checkout_time:
                 return HttpResponseBadRequest(
-                    json.dumps({"error": "You have already clocked out today."}),
+                    json.dumps({"error": "You have already checked out today."}),
                     content_type="application/json",
                 )
             attendance_obj.clock_out_time = timezone.now()

@@ -122,21 +122,56 @@
               <div class="text-secondary font-weight-medium mb-1">
                 Check-In Time:
               </div>
-              <div class="font-weight-bold" id="check-in-time">—</div>
+              <div class="font-weight-bold" id="check-in-time">
+                {% if today_attendance and today_attendance.clock_in_time %}
+                  {{ today_attendance.clock_in_time|date:"h:i A" }}
+                {% else %}
+                  —
+                {% endif %}
+              </div>
             </div>
 
             <div class="col-md-4 col-sm-6 mb-3">
               <div class="text-secondary font-weight-medium mb-1">
                 Check-Out Time:
               </div>
-              <div class="font-weight-bold" id="check-out-time">—</div>
+              <div class="font-weight-bold" id="check-out-time">
+                {% if today_attendance and today_attendance.clock_out_time %}
+                  {{ today_attendance.clock_out_time|date:"h:i A" }}
+                {% else %}
+                  —
+                {% endif %}
+              </div>
             </div>
 
             <div class="col-md-4 col-sm-12 mb-3">
               <div class="text-secondary font-weight-medium mb-1">
                 Total Time:
               </div>
-              <div class="font-weight-bold" id="total-time">—</div>
+              <div class="font-weight-bold" id="total-time">
+                {% if today_attendance 
+                      and today_attendance.clock_in_time 
+                      and today_attendance.clock_out_time %}
+                  {# Compute difference in minutes/hours manually #}
+                  {% with
+                      diff_seconds=(today_attendance.clock_out_time|date:"U")
+                                  |add:"-`"|add:today_attendance.clock_in_time|date:"U"` %}
+                    {% with total_minutes=diff_seconds|divisibleby:60 %}
+                      {% with hours=total_minutes|divisibleby:60 %}
+                        {% with minutes=total_minutes|mod:60 %}
+                          {% if hours > 0 %}
+                            {{ hours }}h {{ minutes }}m
+                          {% else %}
+                            {{ minutes }}m
+                          {% endif %}
+                        {% endwith %}
+                      {% endwith %}
+                    {% endwith %}
+                  {% endwith %}
+                {% else %}
+                  —
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
