@@ -5,3 +5,4 @@ index.html
 /templates/old
 /static/assets_old
 index.html.fallback
+.env

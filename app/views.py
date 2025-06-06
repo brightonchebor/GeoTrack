@@ -12,6 +12,8 @@ from django.utils import timezone
 from geopy.distance import great_circle
 from .models import Attendance, Geofence
 
+from django.conf import settings
+
 
 
 def check(request):
@@ -31,6 +33,7 @@ def check(request):
         context = {
             "today_attendance": attendance,
             "user": user,
+            'my_secret_token': settings.MY_SECRET_TOKEN,
         }
         return render(request, "app/check.html", context)
 
