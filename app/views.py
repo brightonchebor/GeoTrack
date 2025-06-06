@@ -29,11 +29,15 @@ def check(request):
         # 1) Look up today's Attendance (if it exists) so the template can show Clock-In/Out times.
         today = date_cls.today()
         attendance = Attendance.objects.filter(user=user, date=today).first()
-
+        geofence = Geofence.objects.first()
+        
         context = {
             "today_attendance": attendance,
             "user": user,
             'my_secret_token': settings.MY_SECRET_TOKEN,
+            "office_lat": geofence.office_lat if geofence else None,
+            "office_long": geofence.office_long if geofence else None,
+            "geofence_radius": geofence.geofence_radius if geofence else None,
         }
         return render(request, "app/check.html", context)
 
