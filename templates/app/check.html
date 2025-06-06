@@ -1,4 +1,5 @@
 {% extends "./base.html" %}
+{% load humanize %}
 {% block content %}
 <!-- Attendance Check-In/Out Section -->
 <section class="feature_2 bg-light pt-105 pb-45 text-center">
@@ -117,7 +118,9 @@
         data-aos-delay="900"
       >
         <div class="p-4 bg-white rounded shadow-sm text-left">
-          <h5 class="mb-4 border-bottom pb-2">Today's Log ({{ today_attendance.date|date:"M d, Y"|default:"Today" }})</h5>
+          <h5 class="mb-4 border-bottom pb-2">
+            Today's Log ({{ today_attendance.date|date:"M d, Y"|default:"Today" }})
+          </h5>
 
           <div class="row">
             <div class="col-md-4 col-sm-6 mb-3">
@@ -125,16 +128,12 @@
                 Check-In Time:
               </div>
               <div class="font-weight-bold" id="check-in-time">
-                {% if today_attendance and today_attendance.checkin_time %}
-                  {{ today_attendance.checkin_time|date:"h:i A" }}
-                {% else %}
-                  —
-                {% endif %}
+                {% if today_attendance and today_attendance.checkin_time %} {{ today_attendance.checkin_time|date:"h:i A" }} {% else %} — {% endif %}
               </div>
               {% if today_attendance.checkin_latitude and today_attendance.checkin_longitude %}
-                <small class="text-muted">
-                  Location: {{ today_attendance.checkin_latitude|floatformat:6 }}°, {{ today_attendance.checkin_longitude|floatformat:6 }}°
-                </small>
+              <small class="text-muted">
+                Location: {{ today_attendance.checkin_latitude|floatformat:6 }}°, {{ today_attendance.checkin_longitude|floatformat:6 }}°
+              </small>
               {% endif %}
             </div>
 
@@ -143,16 +142,12 @@
                 Check-Out Time:
               </div>
               <div class="font-weight-bold" id="check-out-time">
-                {% if today_attendance and today_attendance.checkout_time %}
-                  {{ today_attendance.checkout_time|date:"h:i A" }}
-                {% else %}
-                  —
-                {% endif %}
+                {% if today_attendance and today_attendance.checkout_time %} {{ today_attendance.checkout_time|date:"h:i A" }} {% else %} — {% endif %}
               </div>
               {% if today_attendance.checkout_latitude and today_attendance.checkout_longitude %}
-                <small class="text-muted">
-                  Location: {{ today_attendance.checkout_latitude|floatformat:6 }}°, {{ today_attendance.checkout_longitude|floatformat:6 }}°
-                </small>
+              <small class="text-muted">
+                Location: {{ today_attendance.checkout_latitude|floatformat:6 }}°, {{ today_attendance.checkout_longitude|floatformat:6 }}°
+              </small>
               {% endif %}
             </div>
 
@@ -162,7 +157,6 @@
               </div>
               <div class="font-weight-bold" id="total-time">
                 {% if today_attendance and today_attendance.checkin_time and today_attendance.checkout_time %}
-                  {% load humanize %}
                   {% with time_diff=today_attendance.checkout_time|timesince:today_attendance.checkin_time %}
                     {{ time_diff|default:"—" }}
                   {% endwith %}
@@ -175,25 +169,25 @@
 
           <!-- Additional Info Section -->
           {% if today_attendance %}
-            <div class="row mt-4">
-              <div class="col-12">
-                <h6 class="text-secondary mb-3">Additional Information</h6>
-                <div class="row">
-                  {% if today_attendance.checkin_address %}
-                    <div class="col-md-6 mb-2">
-                      <strong>Check-in Address:</strong><br>
-                      <small class="text-muted">{{ today_attendance.checkin_address }}</small>
-                    </div>
-                  {% endif %}
-                  {% if today_attendance.checkout_address %}
-                    <div class="col-md-6 mb-2">
-                      <strong>Check-out Address:</strong><br>
-                      <small class="text-muted">{{ today_attendance.checkout_address }}</small>
-                    </div>
-                  {% endif %}
+          <div class="row mt-4">
+            <div class="col-12">
+              <h6 class="text-secondary mb-3">Additional Information</h6>
+              <div class="row">
+                {% if today_attendance.checkin_address %}
+                <div class="col-md-6 mb-2">
+                  <strong>Check-in Address:</strong><br />
+                  <small class="text-muted">{{ today_attendance.checkin_address }}</small>
                 </div>
+                {% endif %}
+                {% if today_attendance.checkout_address %}
+                <div class="col-md-6 mb-2">
+                  <strong>Check-out Address:</strong><br />
+                  <small class="text-muted">{{ today_attendance.checkout_address }}</small>
+                </div>
+                {% endif %}
               </div>
             </div>
+          </div>
           {% endif %}
         </div>
       </div>
@@ -202,6 +196,7 @@
 </section>
 
 <style>
+  /* (Style content unchanged as per request) */
   /* 1) Force the row's columns to all match the tallest sibling */
   .row.match-height {
     display: flex;
@@ -214,8 +209,8 @@
   .map-card {
     display: flex !important;
     flex-direction: column !important;
-    flex: 1 1 auto;     /* grow/shrink so it fills entire column height */
-    min-height: 500px;  /* your chosen default minimum */
+    flex: 1 1 auto; /* grow/shrink so it fills entire column height */
+    min-height: 500px; /* your chosen default minimum */
   }
 
   /* 3) The .map-container should fill the remaining vertical space, full width */
@@ -300,7 +295,6 @@
   }
 
   /* 6) RESPONSIVE OVERRIDES — only "min-height" adjustments, no fixed heights! */
-
   @media (max-width: 1199px) {
     .info-card,
     .map-card {
@@ -386,9 +380,10 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 
 <script>
+  // (JavaScript content unchanged as per request)
   // Mapbox setup - replace with your actual access token
   mapboxgl.accessToken = "{{ my_secret_token|escapejs }}";
-  
+
   let map;
   let userMarker;
   let allowedZoneMarker;
@@ -405,17 +400,22 @@
   {% endif %}
 
   // Allowed location coordinates (Office/Work location)
-  const ALLOWED_LOCATION = {
-    lat: -1.286389,
-    lng: 36.817223,
-  };
-  const ALLOWED_RADIUS = 30; // meters
+  {% if office_lat and office_long and geofence_radius %}
+    const ALLOWED_LOCATION = {
+        lat: {{ office_lat }},
+        lng: {{ office_long }},
+    };
+    const ALLOWED_RADIUS = {{ geofence_radius }}; //in meters
+  {% else %}
+    console.error("No geofence configured.");
+    alert("Geofence is not configured. Please contact administrator.");
+  {% endif %}
 
   // Initialize current time as soon as the DOM is loaded
   document.addEventListener("DOMContentLoaded", function () {
     // Initialize button states based on backend data
     updateButtonStates();
-    
+
     // Initialize map with a slight delay to ensure container is ready
     setTimeout(function () {
       initMap();
@@ -457,7 +457,7 @@
   function updateButtonStates() {
     const checkInBtn = document.getElementById("check-in-btn");
     const checkOutBtn = document.getElementById("check-out-btn");
-    
+
     // Update button states based on backend data
     checkInBtn.disabled = hasCheckedIn;
     checkOutBtn.disabled = !hasCheckedIn || hasCheckedOut;
@@ -647,7 +647,7 @@
         const bounds = new mapboxgl.LngLatBounds();
         bounds.extend([longitude, latitude]);
         bounds.extend([ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat]);
-        map.fitBounds(bounds, { 
+        map.fitBounds(bounds, {
           padding: 50,
           maxZoom: 17
         });
@@ -721,7 +721,7 @@
     // Set check-in time
     checkInTime = now;
     document.getElementById("check-in-time").textContent = timeString;
-    
+
     // Disable check-in button and enable check-out button
     document.getElementById("check-in-btn").disabled = true;
     document.getElementById("check-out-btn").disabled = false;

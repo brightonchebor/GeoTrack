@@ -30,7 +30,7 @@ def check(request):
         today = date_cls.today()
         attendance = Attendance.objects.filter(user=user, date=today).first()
         geofence = Geofence.objects.first()
-        
+
         context = {
             "today_attendance": attendance,
             "user": user,
@@ -39,6 +39,7 @@ def check(request):
             "office_long": geofence.office_long if geofence else None,
             "geofence_radius": geofence.geofence_radius if geofence else None,
         }
+        
         return render(request, "app/check.html", context)
 
     elif request.method == "POST":
