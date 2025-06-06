@@ -15,6 +15,9 @@ class Attendance(models.Model):
     checkout_latitude = models.FloatField(null=True, blank=True)  # Latitude for clock-out location
     checkout_longitude = models.FloatField(null=True, blank=True)  # Longitude for clock-out location
 
+    checkin_address = models.TextField(null=True, blank=True)
+    checkout_address = models.TextField(null=True, blank=True)
+    
     def __str__(self):
         
         return f'{self.user.first_name}, {self.user.last_name} - {self.date}'

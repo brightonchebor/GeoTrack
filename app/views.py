@@ -13,8 +13,8 @@ from geopy.distance import great_circle
 from .models import Attendance, Geofence
 
 
-@login_required
-def attendance_check(request):
+
+def check(request):
     """
     GET:  Render the 'check.html' template, passing in today's Attendance (if any).
     POST: Accept JSON { action, latitude, longitude } via AJAX,
@@ -100,7 +100,7 @@ def attendance_check(request):
 
         # 8) Perform checkin / checkout logic
         if action == "checkin":
-            if attendance_obj.clock_in_time:
+            if attendance_obj.checkin_time:
                 return HttpResponseBadRequest(
                     json.dumps({"error": "You have already checked in today."}),
                     content_type="application/json",
@@ -122,9 +122,9 @@ def attendance_check(request):
                     json.dumps({"error": "You have already checked out today."}),
                     content_type="application/json",
                 )
-            attendance_obj.clock_out_time = timezone.now()
-            attendance_obj.clock_out_location_latitude = latitude
-            attendance_obj.clock_out_location_longitude = longitude
+            attendance_obj.checkout_time = timezone.now()
+            attendance_obj.checkout_location_latitude = latitude
+            attendance_obj.checkout_location_longitude = longitude
             attendance_obj.checkout_address = address
 
         attendance_obj.save()
@@ -159,6 +159,6 @@ def home(request):
 
     return render(request, 'app/home.html')
 
-def check(request):
+# def check(request):
 
-    return render(request, 'app/check.html')
+#     return render(request, 'app/check.html')

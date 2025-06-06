@@ -27,7 +27,7 @@
       >
         <div class="info-card p-4 bg-white rounded shadow-sm text-left h-100">
           <h5 class="mb-4 border-bottom pb-2">
-            Welcome, {{ user.get_username }}
+            Welcome, {{ user.get_full_name|default:user.username }}
           </h5>
 
           <div class="row mb-3">
@@ -67,6 +67,7 @@
                 type="button"
                 class="btn btn-primary w-100 py-2 attendance-btn"
                 id="check-in-btn"
+                {% if today_attendance.checkin_time %}disabled{% endif %}
               >
                 <span class="attendance-btn-text">Check In</span>
               </button>
@@ -76,6 +77,7 @@
                 type="button"
                 class="btn btn-danger w-100 py-2 attendance-btn"
                 id="check-out-btn"
+                {% if not today_attendance.checkin_time or today_attendance.checkout_time %}disabled{% endif %}
               >
                 <span class="attendance-btn-text">Check Out</span>
               </button>
@@ -115,7 +117,7 @@
         data-aos-delay="900"
       >
         <div class="p-4 bg-white rounded shadow-sm text-left">
-          <h5 class="mb-4 border-bottom pb-2">Today's Log</h5>
+          <h5 class="mb-4 border-bottom pb-2">Today's Log ({{ today_attendance.date|date:"M d, Y"|default:"Today" }})</h5>
 
           <div class="row">
             <div class="col-md-4 col-sm-6 mb-3">
@@ -123,12 +125,17 @@
                 Check-In Time:
               </div>
               <div class="font-weight-bold" id="check-in-time">
-                {% if today_attendance and today_attendance.clock_in_time %}
-                  {{ today_attendance.clock_in_time|date:"h:i A" }}
+                {% if today_attendance and today_attendance.checkin_time %}
+                  {{ today_attendance.checkin_time|date:"h:i A" }}
                 {% else %}
                   —
                 {% endif %}
               </div>
+              {% if today_attendance.checkin_latitude and today_attendance.checkin_longitude %}
+                <small class="text-muted">
+                  Location: {{ today_attendance.checkin_latitude|floatformat:6 }}°, {{ today_attendance.checkin_longitude|floatformat:6 }}°
+                </small>
+              {% endif %}
             </div>
 
             <div class="col-md-4 col-sm-6 mb-3">
@@ -136,12 +143,17 @@
                 Check-Out Time:
               </div>
               <div class="font-weight-bold" id="check-out-time">
-                {% if today_attendance and today_attendance.clock_out_time %}
-                  {{ today_attendance.clock_out_time|date:"h:i A" }}
+                {% if today_attendance and today_attendance.checkout_time %}
+                  {{ today_attendance.checkout_time|date:"h:i A" }}
                 {% else %}
                   —
                 {% endif %}
               </div>
+              {% if today_attendance.checkout_latitude and today_attendance.checkout_longitude %}
+                <small class="text-muted">
+                  Location: {{ today_attendance.checkout_latitude|floatformat:6 }}°, {{ today_attendance.checkout_longitude|floatformat:6 }}°
+                </small>
+              {% endif %}
             </div>
 
             <div class="col-md-4 col-sm-12 mb-3">
@@ -149,24 +161,10 @@
                 Total Time:
               </div>
               <div class="font-weight-bold" id="total-time">
-                {% if today_attendance 
-                      and today_attendance.clock_in_time 
-                      and today_attendance.clock_out_time %}
-                  {# Compute difference in minutes/hours manually #}
-                  {% with
-                      diff_seconds=(today_attendance.clock_out_time|date:"U")
-                                  |add:"-`"|add:today_attendance.clock_in_time|date:"U"` %}
-                    {% with total_minutes=diff_seconds|divisibleby:60 %}
-                      {% with hours=total_minutes|divisibleby:60 %}
-                        {% with minutes=total_minutes|mod:60 %}
-                          {% if hours > 0 %}
-                            {{ hours }}h {{ minutes }}m
-                          {% else %}
-                            {{ minutes }}m
-                          {% endif %}
-                        {% endwith %}
-                      {% endwith %}
-                    {% endwith %}
+                {% if today_attendance and today_attendance.checkin_time and today_attendance.checkout_time %}
+                  {% load humanize %}
+                  {% with time_diff=today_attendance.checkout_time|timesince:today_attendance.checkin_time %}
+                    {{ time_diff|default:"—" }}
                   {% endwith %}
                 {% else %}
                   —
@@ -174,6 +172,29 @@
               </div>
             </div>
           </div>
+
+          <!-- Additional Info Section -->
+          {% if today_attendance %}
+            <div class="row mt-4">
+              <div class="col-12">
+                <h6 class="text-secondary mb-3">Additional Information</h6>
+                <div class="row">
+                  {% if today_attendance.checkin_address %}
+                    <div class="col-md-6 mb-2">
+                      <strong>Check-in Address:</strong><br>
+                      <small class="text-muted">{{ today_attendance.checkin_address }}</small>
+                    </div>
+                  {% endif %}
+                  {% if today_attendance.checkout_address %}
+                    <div class="col-md-6 mb-2">
+                      <strong>Check-out Address:</strong><br>
+                      <small class="text-muted">{{ today_attendance.checkout_address }}</small>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -374,6 +395,15 @@
   let allowedZoneCircle;
   let checkInTime = null;
 
+  // Get initial state from backend data
+  const hasCheckedIn = {% if today_attendance.checkin_time %}true{% else %}false{% endif %};
+  const hasCheckedOut = {% if today_attendance.checkout_time %}true{% else %}false{% endif %};
+
+  // Set initial check-in time from backend if exists
+  {% if today_attendance.checkin_time %}
+    checkInTime = new Date("{{ today_attendance.checkin_time|date:'c' }}");
+  {% endif %}
+
   // Allowed location coordinates (Office/Work location)
   const ALLOWED_LOCATION = {
     lat: -1.286389,
@@ -383,6 +413,9 @@
 
   // Initialize current time as soon as the DOM is loaded
   document.addEventListener("DOMContentLoaded", function () {
+    // Initialize button states based on backend data
+    updateButtonStates();
+    
     // Initialize map with a slight delay to ensure container is ready
     setTimeout(function () {
       initMap();
@@ -420,6 +453,15 @@
         getCurrentLocationAndCheckOut();
       });
   });
+
+  function updateButtonStates() {
+    const checkInBtn = document.getElementById("check-in-btn");
+    const checkOutBtn = document.getElementById("check-out-btn");
+    
+    // Update button states based on backend data
+    checkInBtn.disabled = hasCheckedIn;
+    checkOutBtn.disabled = !hasCheckedIn || hasCheckedOut;
+  }
 
   function initMap() {
     // Initialize Mapbox map centered on allowed location
@@ -472,6 +514,25 @@
           'circle-stroke-opacity': 0.8
         }
       });
+
+      // Show existing check-in/check-out locations on map if they exist
+      {% if today_attendance.checkin_latitude and today_attendance.checkin_longitude %}
+        const checkinMarker = new mapboxgl.Marker({
+          color: '#28a745'
+        })
+          .setLngLat([{{ today_attendance.checkin_longitude }}, {{ today_attendance.checkin_latitude }}])
+          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText("Check-in Location"))
+          .addTo(map);
+      {% endif %}
+
+      {% if today_attendance.checkout_latitude and today_attendance.checkout_longitude %}
+        const checkoutMarker = new mapboxgl.Marker({
+          color: '#dc3545'
+        })
+          .setLngLat([{{ today_attendance.checkout_longitude }}, {{ today_attendance.checkout_latitude }}])
+          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText("Check-out Location"))
+          .addTo(map);
+      {% endif %}
     });
 
     // Resize map when container size changes
@@ -660,11 +721,7 @@
     // Set check-in time
     checkInTime = now;
     document.getElementById("check-in-time").textContent = timeString;
-    // Reset check-out time
-    document.getElementById("check-out-time").textContent = "—";
-    // Reset total time
-    document.getElementById("total-time").textContent = "—";
-
+    
     // Disable check-in button and enable check-out button
     document.getElementById("check-in-btn").disabled = true;
     document.getElementById("check-out-btn").disabled = false;
@@ -698,8 +755,6 @@
       }
 
       document.getElementById("total-time").textContent = totalTimeString;
-    } else {
-      document.getElementById("total-time").textContent = "—";
     }
 
     // Enable check-in button and disable check-out button
@@ -726,10 +781,12 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.status !== "success") {
-          alert(
-            "Error saving " + action + ": " + (data.message || "Unknown error")
-          );
+        if (data.error) {
+          alert("Error saving " + action + ": " + data.error);
+        } else {
+          console.log("Successfully saved " + action, data);
+          // Optionally refresh the page to show updated backend data
+          // location.reload();
         }
       })
       .catch((error) => {
