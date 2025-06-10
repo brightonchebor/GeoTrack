@@ -18,12 +18,12 @@ def register(request):
                 # Check if username already exists
                 if User.objects.filter(username=username).exists():
                     messages.error(request, 'Username already exists. Please choose a different username.')
-                    return redirect('register')
+                    return redirect('users:register')
                 
                 # Check if email already exists
                 if User.objects.filter(email=email).exists():
                     messages.error(request, 'Email already exists. Please use a different email.')
-                    return redirect('register')
+                    return redirect('users:register')
                 
                 # Create user with just username and email
                 user = User.objects.create_user(
@@ -35,8 +35,9 @@ def register(request):
 
                 profile = UserProfile.objects.create(user=user, role=role)
                 profile.save()
-                
+
                 messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
+                print("Attempting redirect to login...")
                 return redirect('users:login')  
                 
             except Exception as e:
