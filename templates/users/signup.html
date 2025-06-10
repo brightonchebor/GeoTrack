@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
         <h3 class="mb-30 text-center">Create Your GeoTrack Account</h3>
-        <form>
+        <form method="post" action="{% url 'register' %}" id="registerForm">
           {% csrf_token %}
           <div class="form-group mb-20">
             <label for="name">Full Name</label>
@@ -61,7 +61,7 @@
               required
             />
           </div>
-          <button type="submit" class="btn btn-block w-100 btn-dark">
+          <button type="submit" class="btn btn-block btn-primary w-100" style="background-color: black; border-color: black; color: white;">
             Sign Up
           </button>
         </form>
