@@ -6,3 +6,4 @@ index.html
 /static/assets_old
 index.html.fallback
 .env
+/templates/app/check1.html
