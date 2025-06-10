@@ -18,12 +18,13 @@
         <form method="post" action="{% url 'login' %}">
           {% csrf_token %}
           <div class="form-group mb-20">
-            <label for="email">Email address</label>
+            <label for="username">Username</label>
             <input
-              type="email"
+              type="text"
               class="form-control"
-              id="email"
-              placeholder="you@example.com"
+              id="username"
+              name="username"
+              placeholder="username"
               required
             />
           </div>
@@ -33,6 +34,7 @@
               type="password"
               class="form-control"
               id="password"
+              name="password"
               placeholder="••••••••"
               required
             />
