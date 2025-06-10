@@ -766,7 +766,7 @@
 
   // Save check-in/out to backend
   function saveCheckInOut(latitude, longitude, address, action) {
-    fetch('{% url "app:check" %}', {
+    fetch('{% url "check" %}', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
