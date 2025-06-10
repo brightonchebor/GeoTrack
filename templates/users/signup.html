@@ -10,12 +10,12 @@
         <form method="post" action="{% url 'users:register' %}">
           {% csrf_token %}
           <div class="form-group mb-20">
-            <label for="name">Full Name</label>
+            <label for="name">Username</label>
             <input
               type="text"
               class="form-control"
-              id="name"
-              placeholder="Your Name"
+              id="username"
+              placeholder="Your Username"
               required
             />
           </div>
