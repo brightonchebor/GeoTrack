@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from app.models import UserProfile
 
 def register(request):
     if request.method == 'POST':
@@ -10,7 +11,8 @@ def register(request):
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
         email = request.POST['email']
-        
+        role = request.POST['role']
+
         if password == confirm_password:
             try:
                 # Check if username already exists
