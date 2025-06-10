@@ -37,7 +37,6 @@ def register(request):
                 profile.save()
 
                 messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
-                print("Attempting redirect to login...")
                 return redirect('users:login')  
                 
             except Exception as e:
