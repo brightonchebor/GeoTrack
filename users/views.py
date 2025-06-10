@@ -32,6 +32,10 @@ def register(request):
                     email=email
                 )
                 user.save()
+
+                profile = UserProfile.objects.create(user=user, role=role)
+                profile.save()
+                
                 messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
                 return redirect('users:login')  
                 
