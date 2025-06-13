@@ -1,2 +1,5 @@
-from django.urls import path("
-/", .as_view(), name="")
+from django.urls import path
+
+urlpatterns = [
+    path(),
+]
