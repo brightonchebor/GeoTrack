@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 
     'app',
     'users',
-    'accounts',
+    # 'accounts',
 ]
 
 MIDDLEWARE = [
