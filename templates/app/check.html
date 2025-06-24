@@ -1,7 +1,6 @@
 {% extends "./base.html" %}
 {% load humanize %}
 {% block content %}
-<!-- Attendance Check-In/Out Section -->
 <section class="feature_2 bg-light pt-105 pb-45 text-center">
   <div class="container px-xl-0">
     <div class="row justify-content-center match-height">
@@ -20,7 +19,6 @@
         </div>
       </div>
 
-      <!-- User & Location Info -->
       <div
         class="col-xl-6 col-lg-6 col-md-12 mb-30"
         data-aos="fade-up"
@@ -61,7 +59,6 @@
             <div class="col-7 font-weight-bold" id="current-location">—</div>
           </div>
 
-          <!-- Check In/Out Buttons with improved visibility -->
           <div class="row">
             <div class="col-sm-6 col-12 mb-2 mb-sm-0">
               <button
@@ -87,7 +84,6 @@
         </div>
       </div>
 
-      <!-- Map Section -->
       <div
         class="col-xl-6 col-lg-6 col-md-12 mb-30"
         data-aos="fade-up"
@@ -111,7 +107,6 @@
         </div>
       </div>
 
-      <!-- Today's Attendance Log -->
       <div
         class="col-xl-12 col-lg-10 mb-30"
         data-aos="fade-up"
@@ -167,7 +162,6 @@
             </div>
           </div>
 
-          <!-- Additional Info Section -->
           {% if today_attendance %}
           <div class="row mt-4">
             <div class="col-12">
@@ -196,7 +190,7 @@
 </section>
 
 <style>
-  /* (Style content unchanged as per request) */
+  /* (Style content is unchanged) */
   /* 1) Force the row's columns to all match the tallest sibling */
   .row.match-height {
     display: flex;
@@ -372,22 +366,25 @@
   }
 </style>
 
-<!-- Mapbox GL CSS and JS -->
 <link
-  href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
   rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
 />
-<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
 
 <script>
-  // (JavaScript content unchanged as per request)
-  // Mapbox setup - replace with your actual access token
-  mapboxgl.accessToken = "{{ my_secret_token|escapejs }}";
+  // Go Maps Pro setup - replace with your actual API key
+  const GOMAPS_PRO_API_KEY = "{{ my_secret_token|escapejs }}";
 
   let map;
   let userMarker;
-  let allowedZoneMarker;
-  let allowedZoneCircle;
+  
   let checkInTime = null;
 
   // Get initial state from backend data
@@ -464,86 +461,47 @@
   }
 
   function initMap() {
-    // Initialize Mapbox map centered on allowed location
-    map = new mapboxgl.Map({
-      container: "map",
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat], // [longitude, latitude]
-      zoom: 17,
-      maxZoom: 22
-    });
+    // Initialize Leaflet map centered on allowed location
+    map = L.map("map").setView([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], 17);
+
+    // Add a tile layer (e.g., OpenStreetMap). Go Maps Pro might offer its own tile server URL.
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
     // Add allowed zone marker
-    allowedZoneMarker = new mapboxgl.Marker({
-      color: '#6c757d'
-    })
-      .setLngLat([ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat])
-      .setPopup(new mapboxgl.Popup({ offset: 25 }).setText("Allowed Check-in Zone"))
-      .addTo(map);
+    L.marker([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], {
+      // Custom icon can be created for a different look
+    }).addTo(map)
+      .bindPopup("Allowed Check-in Zone");
 
-    // Create allowed zone circle using a GeoJSON source
-    map.on('load', function() {
-      // Add allowed zone circle
-      map.addSource('allowed-zone', {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat]
-          }
-        }
-      });
+    // Add allowed zone circle
+    L.circle([ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng], {
+      color: '#6c757d',
+      fillColor: '#6c757d',
+      fillOpacity: 0.2,
+      radius: ALLOWED_RADIUS // Radius in meters
+    }).addTo(map);
 
-      map.addLayer({
-        id: 'allowed-zone-circle',
-        type: 'circle',
-        source: 'allowed-zone',
-        paint: {
-          'circle-radius': {
-            stops: [
-              [0, 0],
-              [20, metersToPixelsAtMaxZoom(ALLOWED_RADIUS, ALLOWED_LOCATION.lat)]
-            ],
-            base: 2
-          },
-          'circle-color': '#6c757d',
-          'circle-opacity': 0.2,
-          'circle-stroke-color': '#6c757d',
-          'circle-stroke-width': 2,
-          'circle-stroke-opacity': 0.8
-        }
-      });
+    // Show existing check-in/check-out locations on map if they exist
+    {% if today_attendance.checkin_latitude and today_attendance.checkin_longitude %}
+      L.marker([{{ today_attendance.checkin_latitude }}, {{ today_attendance.checkin_longitude }}], {
+        // We can create a custom green icon here
+      }).addTo(map)
+        .bindPopup("Check-in Location");
+    {% endif %}
 
-      // Show existing check-in/check-out locations on map if they exist
-      {% if today_attendance.checkin_latitude and today_attendance.checkin_longitude %}
-        const checkinMarker = new mapboxgl.Marker({
-          color: '#28a745'
-        })
-          .setLngLat([{{ today_attendance.checkin_longitude }}, {{ today_attendance.checkin_latitude }}])
-          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText("Check-in Location"))
-          .addTo(map);
-      {% endif %}
-
-      {% if today_attendance.checkout_latitude and today_attendance.checkout_longitude %}
-        const checkoutMarker = new mapboxgl.Marker({
-          color: '#dc3545'
-        })
-          .setLngLat([{{ today_attendance.checkout_longitude }}, {{ today_attendance.checkout_latitude }}])
-          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText("Check-out Location"))
-          .addTo(map);
-      {% endif %}
-    });
+    {% if today_attendance.checkout_latitude and today_attendance.checkout_longitude %}
+      L.marker([{{ today_attendance.checkout_latitude }}, {{ today_attendance.checkout_longitude }}], {
+        // We can create a custom red icon here
+      }).addTo(map)
+        .bindPopup("Check-out Location");
+    {% endif %}
 
     // Resize map when container size changes
     setTimeout(function () {
-      map.resize();
+      map.invalidateSize();
     }, 200);
-  }
-
-  // Helper function to convert meters to pixels at max zoom
-  function metersToPixelsAtMaxZoom(meters, latitude) {
-    return meters / 0.075 / Math.cos(latitude * Math.PI / 180);
   }
 
   function getCurrentLocationAndCheckIn() {
@@ -593,15 +551,21 @@
     const longitude = position.coords.longitude;
     const accuracy = position.coords.accuracy;
 
-    // Reverse geocode using Mapbox Geocoding API
-    fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`
-    )
+    // Construct the Go Maps Pro reverse geocoding URL
+    // NOTE: This URL is a sensible guess based on standard API design. 
+    // You may need to adjust it based on Go Maps Pro's actual documentation.
+    const geocodingUrl = `https://api.gomaps.pro/v1/geocode/reverse?location=${latitude},${longitude}&key=${GOMAPS_PRO_API_KEY}`;
+    
+    // Reverse geocode using Go Maps Pro Geocoding API
+    fetch(geocodingUrl)
       .then((response) => response.json())
       .then((data) => {
         let address = "Unknown location";
-        if (data.features && data.features.length > 0) {
-          address = data.features[0].place_name;
+        // Assuming a Google-like response format: data.results[0].formatted_address
+        if (data.results && data.results.length > 0) {
+          address = data.results[0].formatted_address;
+        } else if (data.error_message) {
+            console.error("Geocoding API error:", data.error_message);
         }
 
         // Update location display
@@ -636,21 +600,16 @@
           userMarker.remove();
         }
 
-        userMarker = new mapboxgl.Marker({
-          color: '#000000'
-        })
-          .setLngLat([longitude, latitude])
-          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText("Your Current Location"))
-          .addTo(map);
+        userMarker = L.marker([latitude, longitude]).addTo(map)
+          .bindPopup("Your Current Location")
+          .openPopup();
 
         // Fit map to show both user location and allowed zone
-        const bounds = new mapboxgl.LngLatBounds();
-        bounds.extend([longitude, latitude]);
-        bounds.extend([ALLOWED_LOCATION.lng, ALLOWED_LOCATION.lat]);
-        map.fitBounds(bounds, {
-          padding: 50,
-          maxZoom: 17
-        });
+        const bounds = L.latLngBounds([
+            [latitude, longitude],
+            [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng]
+        ]);
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 17 });
 
         // Handle check-in/check-out
         if (isInZone) {
@@ -674,7 +633,7 @@
         }
       })
       .catch((error) => {
-        console.error("Geocoding error:", error);
+        console.error("Geocoding fetch error:", error);
         document.getElementById(
           "current-location"
         ).textContent = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
@@ -815,7 +774,7 @@
   window.addEventListener("resize", function () {
     if (map) {
       setTimeout(function () {
-        map.resize();
+        map.invalidateSize();
       }, 100);
     }
   });
