@@ -34,7 +34,7 @@ def check(request):
         context = {
             "today_attendance": attendance,
             "user": user,
-            'my_secret_token': settings.MY_SECRET_TOKEN,
+            'google_maps_api_key': settings.MY_SECRET_TOKEN,
             "office_lat": geofence.office_lat if geofence else None,
             "office_long": geofence.office_long if geofence else None,
             "geofence_radius": geofence.geofence_radius if geofence else None,
