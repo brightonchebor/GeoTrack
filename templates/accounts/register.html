@@ -12,7 +12,7 @@
             {% endfor %}
         </ul>
     {% endif %}
-    <form method="post" action="{% url 'register_user' %}">
+    <form method="post" action="{% url 'login_user' %}">
         {% csrf_token %}
         <label for="username">Username:</label>
         <input type="text" name="username" required><br>
