@@ -1,33 +1,87 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Register</title>
-</head>
-<body>
-    <h2>Register</h2>
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    <form method="post" action="{% url 'login_user' %}">
-        {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" name="username" required><br>
-        <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-        <label for="confirm_password">Confirm Password:</label>
-        <input type="password" name="confirm_password" required><br>
-        <label for="role">Role:</label>
-        <select name="role">
-            <option value="student">Student</option>
-            <option value="teacher">Teacher</option>
-        </select><br>
-        <button type="submit">Register</button>
-    </form>
-</body>
-</html>
+{% extends "../app/base.html" %} 
+
+{% block content %}
+<!-- Signup Form -->
+<section class="py-80">
+  {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+  {% endif %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <h3 class="mb-30 text-center">Create Your GeoTrack Account</h3>
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <div class="form-group mb-20">
+              <label for="username">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                placeholder="Your Username"
+                required
+              />
+            </div>
+            <div class="form-group mb-20">
+              <label for="email">Email address</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div class="form-group mb-20">
+              <label for="role">Role</label>
+              <select 
+                class="form-control" 
+                id="role" 
+                name="role"
+                required
+              >
+                <option value="attachee" selected>Attachee</option>
+                <option value="supervisor">Supervisor</option>
+              </select>
+            </div>
+            <div class="form-group mb-20">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <div class="form-group mb-30">
+              <label for="confirm_password">Confirm Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="confirm_password"
+                name="confirm_password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-block btn-primary w-100" style="background-color: black !important; border-color: black !important; color: white !important; padding: 12px 20px !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+              Register
+            </button>
+        </form>
+        <p class="mt-20 text-center">
+          Already have an account?
+          <a href="{% url "login" %}" class="link color-main">Login here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
