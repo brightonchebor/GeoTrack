@@ -55,7 +55,7 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   </head>
-  <body>
+ 
     <!-- Navigation 1 -->
     <nav class="navigation_1 bg-light pt-30 pb-30 text-center">
       <div class="container px-xl-0">
@@ -72,31 +72,7 @@
             </a>
           </div>
 
-          <!-- Center Navigation Links -->
-          <div
-            class="col-lg-6"
-            data-aos-duration="600"
-            data-aos="fade-down"
-            data-aos-delay="0"
-          >
-            <a href="{% url "home" %}" class="link color-main mx-15">Home</a>
-            <a href="{% url "check" %}" class="link color-main mx-15">Check In/Out</a>
-            <a href="#" class="link color-main mx-15">Reports</a>
-            <a href="#" class="link color-main mx-15">Dashboard</a>
-
-            
-          </div>
-
-          <!-- Right Auth Buttons -->
-          <div
-            class="mt-20 mt-lg-0 col-lg-3 d-flex flex-wrap justify-content-center justify-content-lg-end align-items-center"
-            data-aos-duration="600"
-            data-aos="fade-down"
-            data-aos-delay="300"
-          >
-          <a href="{% url "login" %}" class="mr-20 link color-main">Login</a>
-          <a href="{% url "register" %}" class="btn sm action-2 f-16">Register</a>
-          </div>
+          
         </div>
       </div>
     </nav>
@@ -222,5 +198,5 @@
 
     <!-- Custom Script -->
     <script src="{% static 'assets/js/script.js' %}"></script>
-  </body>
+
 </html>
