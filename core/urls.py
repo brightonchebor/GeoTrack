@@ -7,5 +7,5 @@ urlpatterns = [
     path('', include('app.urls')),
     path('', include('users.urls')),
     path('', include('accounts.urls')),
-    path('', include('myapp.urls')),
+    path('new/', include('myapp.urls')),
 ]
