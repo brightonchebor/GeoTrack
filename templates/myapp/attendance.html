@@ -154,7 +154,7 @@
                         </div>
                     </div>
                     
-                    {% if today_attendance %}
+                    {% comment %} {% if today_attendance %}
                     <div class="additional-info" style="margin-top: 30px; padding-top: 30px; border-top: 1px solid #eee;">
                         <h5 style="color: #000; margin-bottom: 20px;">Additional Information</h5>
                         <div class="row">
@@ -172,7 +172,8 @@
                             {% endif %}
                         </div>
                     </div>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
+                    
                 </div>
             </div>
         </div>
