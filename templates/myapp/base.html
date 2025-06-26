@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>geoTrack</title>
+    <link rel="icon" href="{% static 'myapp/assets/images/favicon.png' %}" type="image/png" sizes="16x16">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="iLand Multipurpose Landing Page Template">
+    <meta name="keywords" content="iLand HTML Template, iLand Landing Page, Landing Page Template">
+    <link href="{% static 'myapp/assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="all" />
+    <link href="https://fonts.googleapis.com/css?family=Open%20Sans:300,400,500,600,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{% static 'myapp/assets/css/animate.css' %}">
+    <!-- Resource style -->
+    <link rel="stylesheet" href="{% static 'myapp/assets/css/owl.carousel.css' %}">
+    <link rel="stylesheet" href="{% static 'myapp/assets/css/owl.theme.css' %}">
+    <link rel="stylesheet" href="{% static 'myapp/assets/css/ionicons.min.css' %}">
+    <!-- Resource style -->
+    <link href="{% static 'myapp/assets/css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <nav class="navbar navbar-default navbar-fixed-top">
+                <div class="container">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header page-scroll">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                        <a class="navbar-brand page-scroll" href="#main"><img src="{% static 'myapp/assets/images/geo.png' %}" width="100" height="50" alt="geoTrack" /></a>
+                    </div>
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li><a class="page-scroll" href="#main">Product</a></li>
+                            <li><a class="page-scroll" href="#features">Features</a></li>
+                            <li><a class="page-scroll" href="#review-section">Reviews</a></li>
+                            <li><a class="page-scroll" href="#pricing">Pricing</a></li>
+                            {% if user.is_authenticated %}
+                                <li><a class="page-scroll" href="#contact">Dashboard</a></li>
+                                <li><a class="page-scroll" href="#contact">Logout</a></li>
+                            {% else %}
+                                <li><a class="page-scroll" href="#contact">Sign Up</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+        <div class="main app form" id="main">
+            <!-- Main Section-->
+            <div class="hero-section">
+                <div class="container nopadding">
+                    <div class="col-md-5"> <img class="img-responsive wow fadeInUp" data-wow-delay="0.1s" src="{% static 'myapp/assets/images/gpsicon2.png' %}" alt="App" /> </div>
+                    <div class="col-md-7">
+                        <div class="hero-content">
+                            <h1 class="wow fadeInUp" data-wow-delay="0.1s">Effortless Time Tracking with geoTrack</h1>
+                            <p class="wow fadeInUp" data-wow-delay="0.2s"> geoTrack revolutionizes attendance management by automatically clocking users in and out based on their location. Perfect for teams, freelancers, and organizations, it ensures accurate, hassle-free time tracking, eliminating manual errors and boosting productivity. </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Client Section -->
+            <div class="client-section">
+                <div class="container text-center">
+                    <div class="clients owl-carousel owl-theme">
+                        <!-- <div class="single"> <img src="{% static 'myapp/assets/images/client1.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client2.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client3.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client1.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client2.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client3.png' %}" alt="Image" /> </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="pitch text-center">
+                <div class="container">
+                    <div class="pitch-intro">
+                        <h1 class="wow fadeInDown" data-wow-delay="0s">Effortless Time Tracking, Powered by Location</h1>
+                        <p class="wow fadeInDown" data-wow-delay="0.2s"> GeoTrack simplifies attendance management by automatically tracking time based on your team’s location. No manual entries, no errors—just accurate, real-time data to boost productivity.</p>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4 wow fadeInDown" data-wow-delay="0.2s">
+                            <div class="pitch-icon"> <i class="ion-ios-time-outline"></i> </div>
+                            <div class="pitch-content">
+                                <h1>Automated Clock-Ins</h1>
+                                <p> Seamlessly record time when users enter or leave designated locations. </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 wow fadeInDown" data-wow-delay="0.2s">
+                            <div class="pitch-icon"> <i class="ion-ios-checkmark-outline"></i> </div>
+                            <div class="pitch-content">
+                                <h1>Real-Time Insights</h1>
+                                <p> Monitor attendance and productivity with intuitive dashboards. </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 wow fadeInDown" data-wow-delay="0.2s">
+                            <div class="pitch-icon"> <i class="ion-ios-people-outline"></i> </div>
+                            <div class="pitch-content">
+                                <h1>Flexible for All</h1>
+                                <p> Perfect for remote teams, freelancers, and on-site organizations. </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Section -->
+            <div class="client-section">
+                <div class="container text-center">
+                    <div class="clients owl-carousel owl-theme">
+                        <!-- <div class="single"> <img src="{% static 'myapp/assets/images/client1.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client2.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client3.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client1.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client2.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client3.png' %}" alt="Image" /> </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="review-section" class="review-section">
+                <div class="container">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="reviews owl-carousel owl-theme">
+                            <div class="review-single"><img class="img-circle" src="{% static 'myapp/assets/images/customer1.png' %}" alt="Client Testimonoal" />
+                                <div class="review-text wow fadeInUp" data-wow-delay="0.2s">
+                                    <p>Morbi eget dictum enim. Praesent sed quam sit amet lorem tempor rhoncus. <br>In hac habitasse platea dictumst. Vivamus in accumsan ex</p>
+                                    <h3>Johnathan Doe</h3>
+                                    <h3>Marketing Head Matrix media</h3>
+                                </div>
+                            </div>
+                            <div class="review-single"><img class="img-circle" src="{% static 'myapp/assets/images/customer2.png' %}" alt="Client Testimonoal" />
+                                <div class="review-text">
+                                    <p>Morbi eget dictum enim. Praesent sed quam sit amet lorem tempor rhoncus. <br>In hac habitasse platea dictumst. Vivamus in accumsan ex</p>
+                                    <h3>Oidila Matik</h3>
+                                    <h3>President Lexo Inc</h3>
+                                </div>
+                            </div>
+                            <div class="review-single"><img class="img-circle" src="{% static 'myapp/assets/images/customer3.png' %}" alt="Client Testimonoal" />
+                                <div class="review-text">
+                                    <p>Morbi eget dictum enim. Praesent sed quam sit amet lorem tempor rhoncus. <br>In hac habitasse platea dictumst. Vivamus in accumsan ex</p>
+                                    <h3>- Alex Dattilo</h3>
+                                    <h3>CEO Optima Inc</h3>
+                                </div>
+                            </div>
+                            <div class="review-single"><img class="img-circle" src="{% static 'myapp/assets/images/customer4.png' %}" alt="Client Testimonoal" />
+                                <div class="review-text">
+                                    <p>Morbi eget dictum enim. Praesent sed quam sit amet lorem tempor rhoncus. <br>In hac habitasse platea dictumst. Vivamus in accumsan ex</p>
+                                    <h3>- Robert Hammer</h3>
+                                    <h3>design head Omega Corp</h3>
+                                </div>
+                            </div>
+                            <div class="review-single"><img class="img-circle" src="{% static 'myapp/assets/images/customer5.png' %}" alt="Client Testimonoal" />
+                                <div class="review-text">
+                                    <p>Morbi eget dictum enim. Praesent sed quam sit amet lorem tempor rhoncus. <br>In hac habitasse platea dictumst. Vivamus in accumsan ex</p>
+                                    <h3>- Rita Valentine</h3>
+                                    <h3>CEO Behena digital</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Section -->
+            <div class="client-section">
+                <div class="container text-center">
+                    <div class="clients owl-carousel owl-theme">
+                        <!-- <div class="single"> <img src="{% static 'myapp/assets/images/client1.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client2.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client3.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client1.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client2.png' %}" alt="Image" /> </div>
+                        <div class="single"> <img src="{% static 'myapp/assets/images/client3.png' %}" alt="Image" /> </div> -->
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Footer Section -->
+            <div class="footer">
+                <div class="container">
+                    <div class="col-md-7"> <img src="{% static 'myapp/assets/images/geo.png' %}" width="80" height="30" alt="Image" />
+                        <p> Simplify Time Tracking with Location-Based Automation </p>
+                    </div>
+                    <div class="col-md-5">
+                        <h1>Contact Us</h1>
+                        <p> Contact our 24/7 customer support if you have any <br class="hidden-xs"> questions. We'll help you out. </p>
+                        <a href="mailto:support@gmail.com">contact@geoTrack.com</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Scroll To Top -->
+        <a id="back-top" class="back-to-top page-scroll" href="#main"> <i class="ion-ios-arrow-thin-up"></i> </a>
+        <!-- Scroll To Top Ends-->
+    </div>
+    <!-- Main Section -->
+    </div>
+    <!-- Wrapper-->
+    <!-- Jquery and Js Plugins -->
+    <script type="text/javascript" src="{% static 'myapp/assets/js/jquery-2.1.1.js' %}"></script>
+    <script type="text/javascript" src="{% static 'myapp/assets/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'myapp/assets/js/plugins.js' %}"></script>
+    <script type="text/javascript" src="{% static 'myapp/assets/js/menu.js' %}"></script>
+    <script type="text/javascript" src="{% static 'myapp/assets/js/custom.js' %}"></script>
+    <script src="{% static 'myapp/assets/js/jquery.subscribe.js' %}"></script>
+</body>
+
+</html>
