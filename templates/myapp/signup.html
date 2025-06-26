@@ -2,6 +2,9 @@
 <br />
 <br />
 <br />
+{% if messages %} {% for message in messages %}
+<div class="alert alert-{{ message.tags }}">{{ message }}</div>
+{% endfor %} {% endif %}
 <div
    class="pitch"
    style="
@@ -65,7 +68,7 @@
             </div>
             <div style="margin-bottom: 20px">
                <label
-                  for="email"
+                  for="username"
                   style="
                      display: block;
                      margin-bottom: 8px;
@@ -207,7 +210,7 @@
          >
             Already have an account?
             <a
-               href="{% url 'login' %}"
+               href="{% url 'myapp:login' %}"
                style="color: #007bff; text-decoration: none"
                >Login here</a
             >
