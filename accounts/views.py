@@ -18,12 +18,12 @@ def register(request):
                 # Check if username already exists
                 if User.objects.filter(username=username).exists():
                     messages.error(request, 'Username already exists. Please choose a different username.')
-                    return redirect('register_user')
+                    return redirect('myapp:register')
                 
                 # Check if email already exists
                 if User.objects.filter(email=email).exists():
                     messages.error(request, 'Email already exists. Please use a different email.')
-                    return redirect('register_user')
+                    return redirect('myapp:register')
                 
                 # Create user with just username and email
                 user = User.objects.create_user(
@@ -37,16 +37,16 @@ def register(request):
                 profile.save()
 
                 messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
-                return redirect('login_user')  
+                return redirect('myapp:login')
                 
             except Exception as e:
                 messages.error(request, f'An error occurred: {str(e)}')
-                return redirect('register_user')
+                return redirect('myapp:register')
         else:
             messages.error(request, 'Password mismatch. Ensure both fields are identical')
-            return redirect('register_user')
+            return redirect('myapp:register')
     
-    return render(request, 'accounts/register.html', context={})
+    return render(request, 'myapp/signup.html', context={})
 
 def login_view(request):
 
@@ -65,15 +65,15 @@ def login_view(request):
                 request,
                 'You are now logged in'
             )
-            return redirect('home')
+            return redirect('myapp:home')
         else:
             messages.error(
                 request,
                 'Invalid login credentials'
             )    
-    return render(request, 'accounts/login.html', context={})
+    return render(request, 'myapp/login.html', context={})
 
 def logout_view(request):
     logout(request)
-    return redirect('home')
+    return redirect('myapp:home')
     
