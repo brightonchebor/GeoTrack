@@ -7,6 +7,9 @@ from .models import UserProfile
 def home(request):
    return render(request, 'myapp/home.html')
 
+def attendance(request):
+    return render(request, 'myapp/attendance.html')
+
 def register(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
