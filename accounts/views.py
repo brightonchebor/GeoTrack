@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -7,73 +6,76 @@ from app.models import UserProfile
 
 def register(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        confirm_password = request.POST['confirm_password']
-        email = request.POST['email']
-        role = request.POST['role']
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        email = request.POST.get('email', '').strip()
+        role = request.POST.get('role', '')
 
-        if password == confirm_password:
-            try:
-                # Check if username already exists
-                if User.objects.filter(username=username).exists():
-                    messages.error(request, 'Username already exists. Please choose a different username.')
-                    return redirect('myapp:register')
-                
-                # Check if email already exists
-                if User.objects.filter(email=email).exists():
-                    messages.error(request, 'Email already exists. Please use a different email.')
-                    return redirect('myapp:register')
-                
-                # Create user with just username and email
-                user = User.objects.create_user(
-                    username=username,
-                    password=password,
-                    email=email
-                )
-                user.save()
+        # Validate required fields
+        if not all([username, password, confirm_password, email, role]):
+            messages.error(request, 'All fields are required.')
+            return redirect('myapp:register')
 
-                profile = UserProfile.objects.create(user=user, role=role)
-                profile.save()
-
-                messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
-                return redirect('myapp:login')
-                
-            except Exception as e:
-                messages.error(request, f'An error occurred: {str(e)}')
-                return redirect('myapp:register')
-        else:
+        # Check password match
+        if password != confirm_password:
             messages.error(request, 'Password mismatch. Ensure both fields are identical')
             return redirect('myapp:register')
-    
-    return render(request, 'myapp/signup.html', context={})
+
+        try:
+            # Check if username already exists
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'Username already exists. Please choose a different username.')
+                return redirect('myapp:register')
+
+            # Check if email already exists
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'Email already exists. Please use a different email.')
+                return redirect('myapp:register')
+
+            # Create user
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email
+            )
+
+            # Create user profile
+            UserProfile.objects.create(user=user, role=role)
+
+            messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
+            return redirect('myapp:login')
+
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+            return redirect('myapp:register')
+
+    return render(request, 'myapp/signup.html')
 
 def login_view(request):
-
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
 
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
+        # Validate required fields
+        if not username or not password:
+            messages.error(request, 'Username and password are required.')
+            return render(request, 'myapp/login.html')
+
+        user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
-            messages.success(
-                request,
-                'You are now logged in'
-            )
+            messages.success(request, 'You are now logged in')
             return redirect('myapp:home')
         else:
-            messages.error(
-                request,
-                'Invalid login credentials'
-            )    
-    return render(request, 'myapp/login.html', context={})
+            messages.error(request, 'Invalid login credentials')
+            return render(request, 'myapp/login.html')
+
+    # GET request - show login form
+    return render(request, 'myapp/login.html')
 
 def logout_view(request):
     logout(request)
+    messages.success(request, 'You have been logged out successfully.')
     return redirect('myapp:home')
-    
