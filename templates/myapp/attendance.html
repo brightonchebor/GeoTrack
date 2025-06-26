@@ -55,24 +55,24 @@
                         </div>
                     </div>
                     
-                    <div class="action-buttons">
-                        <div class="row">
-                            <div class="col-sm-6 mb-3">
-                                <button type="button" class="btn btn-checkin" id="check-in-btn" 
-                                        {% if today_attendance.checkin_time %}disabled{% endif %}
-                                        style="width: 100%; padding: 15px; border: none; border-radius: 8px; background: #28a745; color: white; font-weight: 600; font-size: 16px; transition: all 0.3s ease;">
-                                    Check In
-                                </button>
-                            </div>
-                            <div class="col-sm-6 mb-3">
-                                <button type="button" class="btn btn-checkout" id="check-out-btn"
-                                        {% if not today_attendance.checkin_time or today_attendance.checkout_time %}disabled{% endif %}
-                                        style="width: 100%; padding: 15px; border: none; border-radius: 8px; background: #000; color: white; font-weight: 600; font-size: 16px; transition: all 0.3s ease;">
-                                    Check Out
-                                </button>
-                            </div>
+                  <div class="action-buttons">
+                     <div class="row">
+                        <div class="col-sm-6 mb-4">
+                              <button type="button" class="btn btn-checkin" id="check-in-btn" 
+                                    {% if today_attendance.checkin_time %}disabled{% endif %}
+                                    style="width: 100%; padding: 15px; border: none; border-radius: 8px; background: #28a745; color: white; font-weight: 600; font-size: 16px; transition: all 0.3s ease;">
+                                 Check In
+                              </button>
                         </div>
-                    </div>
+                        <div class="col-sm-6 mb-4">
+                              <button type="button" class="btn btn-checkout" id="check-out-btn"
+                                    {% if not today_attendance.checkin_time or today_attendance.checkout_time %}disabled{% endif %}
+                                    style="width: 100%; padding: 15px; border: none; border-radius: 8px; background: #000; color: white; font-weight: 600; font-size: 16px; transition: all 0.3s ease;">
+                                 Check Out
+                              </button>
+                        </div>
+                     </div>
+                  </div>                    
                 </div>
             </div>
             
