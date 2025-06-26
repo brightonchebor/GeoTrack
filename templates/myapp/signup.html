@@ -2,9 +2,7 @@
 <br />
 <br />
 <br />
-{% if messages %} {% for message in messages %}
-<div class="alert alert-{{ message.tags }}">{{ message }}</div>
-{% endfor %} {% endif %}
+
 <div
    class="pitch"
    style="
@@ -24,6 +22,9 @@
       >
          Create Your GeoTrack Account
       </h1>
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %}
 
       <div
          style="
