@@ -1,1 +1,80 @@
-{% extends "./base.html" %} {% block content %} {% endblock %}
+{% extends "./base.html" %} {% block content %}
+<div class="pitch text-center">
+    <div class="container">
+        <div class="pitch-intro">
+            <h1 class="wow fadeInDown" data-wow-delay="0s">
+                Create Your GeoTrack Account
+            </h1>
+        </div>
+        <div class="col-md-12">
+           <form method="post" action="{% url 'register' %}">
+               {% csrf_token %}
+               <div class="form-group mb-20">
+                 <label for="username">Username</label>
+                 <input
+                   type="text"
+                   class="form-control"
+                   id="username"
+                   name="username"
+                   placeholder="Your Username"
+                   required
+                 />
+               </div>
+               <div class="form-group mb-20">
+                 <label for="email">Email address</label>
+                 <input
+                   type="email"
+                   class="form-control"
+                   id="email"
+                   name="email"
+                   placeholder="you@example.com"
+                   required
+                 />
+               </div>
+               <div class="form-group mb-20">
+                 <label for="role">Role</label>
+                 <select
+                   class="form-control"
+                   id="role"
+                   name="role"
+                   required
+                 >
+                   <option value="attachee" selected>Attachee</option>
+                   <option value="supervisor">Supervisor</option>
+                 </select>
+               </div>
+               <div class="form-group mb-20">
+                 <label for="password">Password</label>
+                 <input
+                   type="password"
+                   class="form-control"
+                   id="password"
+                   name="password"
+                   placeholder="••••••••"
+                   required
+                 />
+               </div>
+               <div class="form-group mb-30">
+                 <label for="confirm_password">Confirm Password</label>
+                 <input
+                   type="password"
+                   class="form-control"
+                   id="confirm_password"
+                   name="confirm_password"
+                   placeholder="••••••••"
+                   required
+                 />
+               </div>
+               <button type="submit" class="btn btn-block btn-primary w-100" style="background-color: black !important; border-color: black !important; color: white !important; padding: 12px 20px !important; display: flex !important; align-items: center !important; justify-content: center !important;">
+                 Register
+               </button>
+           </form>
+           <p class="mt-20 text-center">
+             Already have an account?
+             <a href="{% url "login" %}" class="link color-main">Login here</a>
+           </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -41,7 +41,7 @@
                                 <li><a class="page-scroll" href="#contact">Dashboard</a></li>
                                 <li><a class="page-scroll" href="#contact">Logout</a></li>
                             {% else %}
-                                <li><a class="page-scroll" href="#contact">Sign Up</a></li>
+                                <li><a class="page-scroll" href="{% url 'myapp:register' %}">Sign Up</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -49,11 +49,10 @@
             </nav>
             <!-- /.navbar-collapse -->
         </div>
-
+        <div class="main app form" id="main">
             {% block content%}
 
             {% endblock %}
-
 
             <!-- Footer Section -->
             <div class="footer">
@@ -68,8 +67,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
+
         <!-- Scroll To Top -->
         <a id="back-top" class="back-to-top page-scroll" href="#main"> <i class="ion-ios-arrow-thin-up"></i> </a>
         <!-- Scroll To Top Ends-->
