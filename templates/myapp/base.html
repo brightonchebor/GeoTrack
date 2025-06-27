@@ -34,12 +34,14 @@
                     <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
                             <li><a class="page-scroll" href="{% url 'myapp:home' %}">Home</a></li>
-                            <li><a class="page-scroll" href="{% url 'myapp:attendance' %}">Attendance</a></li>
-                            <li><a class="page-scroll" href="#pricing">Dashboard</a></li>
-                            <li><a class="page-scroll" href="#features">Pricing</a></li>
+                            <li><a class="page-scroll" href="#pricing">Features</a></li>
+                            <li><a class="page-scroll" href="#pricing">Pricing</a></li>
+                            <li><a class="page-scroll" href="#pricing">About</a></li>
+
                             {% if user.is_authenticated %}
+                                <li><a class="page-scroll" href="{% url 'myapp:attendance' %}">Attendance</a></li>
                                 <li><a class="page-scroll" href="#contact">Dashboard</a></li>
-                                <li><a class="page-scroll" href="#contact">Logout</a></li>
+                                <li><a class="page-scroll" href="{% url "myapp:logout" %}">Logout</a></li>
                             {% else %}
                                 <li><a class="page-scroll" href="{% url 'myapp:register' %}">Sign Up</a></li>
                             {% endif %}
