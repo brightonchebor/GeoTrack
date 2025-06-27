@@ -241,3 +241,72 @@ def logout_view(request):
     messages.success(request, 'You have been logged out successfully.')
     return redirect('myapp:home')
 
+
+"""
+# your_app/views.py
+
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import TemplateView
+from django.utils import timezone
+
+from .models import Attendance, CustomUser
+
+class MemberDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/member_dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        user = self.request.user
+        # All attendance records for this member, most recent first
+        ctx["attendance_records"] = Attendance.objects.filter(user=user).order_by("-date")
+        # For example: count of total days checked in this month
+        today = timezone.localdate()
+        first_of_month = today.replace(day=1)
+        ctx["current_month_count"] = Attendance.objects.filter(
+            user=user,
+            date__gte=first_of_month,
+            date__lte=today
+        ).count()
+        return ctx
+
+
+class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = "dashboard/staff_dashboard.html"
+
+    def test_func(self):
+        # Only allow users marked as staff to view this
+        return self.request.user.is_staff
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        today = timezone.localdate()
+
+        # 1. All members
+        members = CustomUser.objects.filter(user_type="member")
+        ctx["members"] = members
+
+        # 2. Today's attendance for all members
+        ctx["today_attendance"] = Attendance.objects.filter(date=today)
+
+        # 3. Monthly summary: how many days each member has checked in so far this month
+        first_of_month = today.replace(day=1)
+        summary = (
+            Attendance.objects
+            .filter(date__gte=first_of_month, date__lte=today)
+            .values("user__id", "user__username", "user__first_name", "user__last_name")
+            .annotate(days_checked_in=models.Count("id"))
+            .order_by("-days_checked_in")
+        )
+        ctx["monthly_summary"] = summary
+
+        # 4. (Optional) The defined geofence
+        ctx["geofence"] = None
+        from .models import Geofence
+        try:
+            ctx["geofence"] = Geofence.objects.first()
+        except Geofence.DoesNotExist:
+            pass
+
+        return ctx
+
+"""
