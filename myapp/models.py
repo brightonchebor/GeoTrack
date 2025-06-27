@@ -17,13 +17,13 @@ class UserProfile(models.Model):
 class CustomUser(AbstractUser):
     USER_TYPE_CHOICES = [
         ("staff", "Staff"),
-        ("community", "Community"),
+        ("member", "Member"),
     ]
     user_type = models.CharField(
         max_length=10,
         choices=USER_TYPE_CHOICES,
-        default="community",
-        help_text="Determines if the user is staff (admin) or a community member."
+        default="member",
+        help_text="Determines if the user is staff (admin) or a member."
     )
 
     def __str__(self):

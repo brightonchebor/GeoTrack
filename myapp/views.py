@@ -172,10 +172,10 @@ def register(request):
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
         email = request.POST.get('email', '').strip()
-        role = request.POST.get('role', '')
+        user_type = request.POST.get('user_type', '')
 
         # Validate required fields
-        if not all([username, password, confirm_password, email, role]):
+        if not all([username, password, confirm_password, email, user_type]):
             messages.error(request, 'All fields are required.')
             return redirect('myapp:register')
 
@@ -199,11 +199,10 @@ def register(request):
             user = User.objects.create_user(
                 username=username,
                 password=password,
-                email=email
+                email=email,
+                user_type=user_type
             )
 
-            # Create user profile
-            UserProfile.objects.create(user=user, role=role)
 
             messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
             return redirect('myapp:login')
