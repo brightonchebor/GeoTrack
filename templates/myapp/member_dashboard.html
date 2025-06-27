@@ -1,0 +1,113 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; min-height: 500px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h2 style="color: #2c3e50; margin-bottom: 30px;">Welcome, {{ user.first_name|default:user.username }}!</h2>
+                <p style="color: #7f8c8d; font-size: 16px;">Track your attendance and view your records</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 40px;">
+        <!-- Attendance Summary Card -->
+        <div class="col-md-4">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #52c234; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px;">
+                    <i class="ion-calendar"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">{{ current_month_count }}</h3>
+                <p style="color: #7f8c8d;">Days This Month</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="col-md-4">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #3498db; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px;">
+                    <i class="ion-location"></i>
+                </div>
+                <h4 style="color: #2c3e50; margin-bottom: 15px;">Quick Check-in</h4>
+                <a href="{% url 'myapp:attendance' %}" style="background: #52c234; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">
+                    Mark Attendance
+                </a>
+            </div>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="col-md-4">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #e74c3c; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px;">
+                    <i class="ion-person"></i>
+                </div>
+                <h4 style="color: #2c3e50; margin-bottom: 10px;">{{ user.first_name }} {{ user.last_name }}</h4>
+                <p style="color: #7f8c8d;">{{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Attendance Records -->
+    <div class="row" style="margin-top: 40px;">
+        <div class="col-md-12">
+            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h3 style="color: #2c3e50; margin-bottom: 25px; display: flex; align-items: center;">
+                    <i class="ion-clipboard" style="margin-right: 10px; color: #52c234;"></i>
+                    Recent Attendance Records
+                </h3>
+                
+                {% if attendance_records %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Date</th>
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Check-in Time</th>
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Location</th>
+                                    <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_records|slice:":10" %}
+                                <tr style="border-bottom: 1px solid #e9ecef;">
+                                    <td style="padding: 12px; color: #2c3e50;">{{ record.date|date:"M d, Y" }}</td>
+                                    <td style="padding: 12px; color: #2c3e50;">{{ record.check_in_time|time:"g:i A" }}</td>
+                                    <td style="padding: 12px; color: #7f8c8d; font-size: 14px;">
+                                        {% if record.latitude and record.longitude %}
+                                            {{ record.latitude|floatformat:4 }}, {{ record.longitude|floatformat:4 }}
+                                        {% else %}
+                                            Not recorded
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                            Present
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% if attendance_records.count > 10 %}
+                        <div style="text-align: center; margin-top: 20px;">
+                            <p style="color: #7f8c8d;">Showing 10 most recent records</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="ion-clipboard" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                        <p>No attendance records found. Start by marking your attendance!</p>
+                        <a href="{% url 'myapp:attendance' %}" style="background: #52c234; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 15px;">
+                            Mark Attendance Now
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -15,6 +15,12 @@ from django.utils import timezone
 from geopy.distance import great_circle
 from django.conf import settings
 
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import TemplateView
+
+
+
+
 
 def home(request):
    return render(request, 'myapp/home.html')
@@ -242,15 +248,6 @@ def logout_view(request):
     return redirect('myapp:home')
 
 
-"""
-# your_app/views.py
-
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import TemplateView
-from django.utils import timezone
-
-from .models import Attendance, CustomUser
-
 class MemberDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "myapp/member_dashboard.html"
 
@@ -308,5 +305,3 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             pass
 
         return ctx
-
-"""

@@ -1,0 +1,203 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; min-height: 500px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h2 style="color: #2c3e50; margin-bottom: 10px;">Staff Dashboard</h2>
+                <p style="color: #7f8c8d; font-size: 16px;">Manage and monitor team attendance</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row" style="margin-top: 40px;">
+        <div class="col-md-3">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #3498db; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
+                    <i class="ion-person-stalker"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">{{ members.count }}</h3>
+                <p style="color: #7f8c8d; font-size: 14px;">Total Members</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #52c234; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
+                    <i class="ion-checkmark-circled"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">{{ today_attendance.count }}</h3>
+                <p style="color: #7f8c8d; font-size: 14px;">Present Today</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #e74c3c; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
+                    <i class="ion-close-circled"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">{{ members.count|add:"-"|add:today_attendance.count }}</h3>
+                <p style="color: #7f8c8d; font-size: 14px;">Absent Today</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #f39c12; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
+                    <i class="ion-location"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">
+                    {% if geofence %}Active{% else %}Not Set{% endif %}
+                </h3>
+                <p style="color: #7f8c8d; font-size: 14px;">Geofence Status</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Attendance -->
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-md-6">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center;">
+                    <i class="ion-calendar" style="margin-right: 8px; color: #52c234;"></i>
+                    Today's Attendance
+                </h4>
+                
+                {% if today_attendance %}
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        {% for attendance in today_attendance %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f1f1;">
+                            <div>
+                                <strong style="color: #2c3e50;">{{ attendance.user.first_name }} {{ attendance.user.last_name }}</strong>
+                                <br>
+                                <small style="color: #7f8c8d;">{{ attendance.user.username }}</small>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 10px; font-size: 12px;">
+                                    {{ attendance.check_in_time|time:"g:i A" }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 20px; color: #7f8c8d;">
+                        <i class="ion-sad-outline" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+                        <p>No one has checked in today yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Monthly Summary -->
+        <div class="col-md-6">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center;">
+                    <i class="ion-stats-bars" style="margin-right: 8px; color: #3498db;"></i>
+                    Monthly Summary
+                </h4>
+                
+                {% if monthly_summary %}
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        {% for summary in monthly_summary %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f1f1;">
+                            <div>
+                                <strong style="color: #2c3e50;">{{ summary.user__first_name }} {{ summary.user__last_name }}</strong>
+                                <br>
+                                <small style="color: #7f8c8d;">{{ summary.user__username }}</small>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 15px; font-size: 14px; font-weight: 500;">
+                                    {{ summary.days_checked_in }} days
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 20px; color: #7f8c8d;">
+                        <i class="ion-stats-bars" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+                        <p>No attendance data for this month.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- All Members List -->
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-md-12">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center;">
+                    <i class="ion-person-stalker" style="margin-right: 8px; color: #e74c3c;"></i>
+                    All Team Members
+                </h4>
+                
+                {% if members %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Name</th>
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Username</th>
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Email</th>
+                                    <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Today's Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in members %}
+                                <tr style="border-bottom: 1px solid #e9ecef;">
+                                    <td style="padding: 12px; color: #2c3e50;">{{ member.first_name }} {{ member.last_name }}</td>
+                                    <td style="padding: 12px; color: #2c3e50;">{{ member.username }}</td>
+                                    <td style="padding: 12px; color: #7f8c8d;">{{ member.email }}</td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        {% if member.id in today_attendance|dictsort:"user_id"|map:"user_id" %}
+                                            <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                Present
+                                            </span>
+                                        {% else %}
+                                            <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                Absent
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="ion-person-stalker" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                        <p>No team members found.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if geofence %}
+    <!-- Geofence Information -->
+    <div class="row" style="margin-top: 30px;">
+        <div class="col-md-12">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center;">
+                    <i class="ion-location" style="margin-right: 8px; color: #f39c12;"></i>
+                    Geofence Configuration
+                </h4>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                    <p style="color: #2c3e50; margin: 0;">
+                        <strong>Location:</strong> {{ geofence.latitude|floatformat:6 }}, {{ geofence.longitude|floatformat:6 }}
+                        <br>
+                        <strong>Radius:</strong> {{ geofence.radius }} meters
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
