@@ -1,6 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.conf import settings 
 
+"""
 class UserProfile(models.Model):
     ROLE_CHOICES = [
         ('attachee', 'Attachee'),
@@ -9,10 +12,31 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='attachee')
+"""
+
+class CustomUser(AbstractUser):
+    USER_TYPE_CHOICES = [
+        ("staff", "Staff"),
+        ("community", "Community"),
+    ]
+    user_type = models.CharField(
+        max_length=10,
+        choices=USER_TYPE_CHOICES,
+        default="community",
+        help_text="Determines if the user is staff (admin) or a community member."
+    )
+
+    def __str__(self):
+        return f"{self.username} ({self.get_user_type_display()})"
+        
+    def save(self, *args, **kwargs):
+        if self.user_type == "staff":
+            self.is_staff = True
+        super().save(*args, **kwargs)
 
 class Attendance(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     date = models.DateField()
 
     checkin_time = models.DateTimeField(null=True, blank=True)  # Store clock-in time
@@ -44,3 +68,4 @@ class Geofence(models.Model):
 
     def __str__(self):
         return f'latitude:{self.office_lat}, longitude:{self.office_long}, radius:{self.geofence_radius}'
+

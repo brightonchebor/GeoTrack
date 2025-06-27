@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from datetime import date as date_cls
-from django.contrib.auth.models import User
+from .models import CustomUser as User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .models import *

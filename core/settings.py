@@ -112,3 +112,5 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MY_SECRET_TOKEN = env('MY_SECRET_TOKEN')
+
+AUTH_USER_MODEL = 'myapp.CustomUser'
