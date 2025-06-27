@@ -11,8 +11,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         'email',
         'first_name',
         'last_name',
-        'user_type',           # raw value
-        'get_user_type_display',  # human‐readable
+        'role',         # ← our custom column
         'is_staff',
         'is_active',
     )
@@ -29,9 +28,10 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
     ordering = ('username',)
 
-    # If you don’t want both the raw and the display value in the list, you can
-    # drop one of them. You can also rename the column header for get_user_type_display:
-    get_user_type_display.short_description = 'Role'
+    @admin.display(description='Role')
+    def role(self, obj):
+        # returns the human‐readable version of user_type
+        return obj.get_user_type_display()
 
 
 @admin.register(Attendance)
@@ -39,9 +39,9 @@ class AttendanceAdmin(admin.ModelAdmin):
     """
     Admin settings for Attendance model.
     """
-    list_display = ('user', 'date', 'checkin_time', 'checkout_time')
-    list_filter  = ('date',)
-    search_fields = ('user__username', 'user__first_name', 'user__last_name')
+    list_display   = ('user', 'date', 'checkin_time', 'checkout_time')
+    list_filter    = ('date',)
+    search_fields  = ('user__username', 'user__first_name', 'user__last_name')
     date_hierarchy = 'date'
 
 
