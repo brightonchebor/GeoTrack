@@ -252,7 +252,7 @@ from django.utils import timezone
 from .models import Attendance, CustomUser
 
 class MemberDashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "dashboard/member_dashboard.html"
+    template_name = "myapp/member_dashboard.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -271,7 +271,7 @@ class MemberDashboardView(LoginRequiredMixin, TemplateView):
 
 
 class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = "dashboard/staff_dashboard.html"
+    template_name = "myapp/staff_dashboard.html"
 
     def test_func(self):
         # Only allow users marked as staff to view this
