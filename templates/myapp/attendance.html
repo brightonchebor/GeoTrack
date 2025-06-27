@@ -72,7 +72,8 @@
                                 </button>
                             </div>
                         </div>
-                    </div>                    
+                    </div>   
+
                 </div>
             </div>
             
@@ -260,6 +261,33 @@
     
     .log-item {
         margin-bottom: 20px;
+    }
+}
+/* Mobile button fixes */
+@media (max-width: 576px) {
+    .btn-checkin, .btn-checkout {
+        padding: 20px 15px !important;
+        font-size: 15px !important;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 375px) {
+    .btn-checkin, .btn-checkout {
+        padding: 18px 12px !important;
+        font-size: 14px !important;
+    }
+}
+@media (max-width: 576px) {
+    .action-buttons .row {
+        display: flex !important;
+    }
+    .action-buttons .col-sm-6 {
+        flex: 1 !important;
+        margin-right: 10px;
+    }
+    .action-buttons .col-sm-6:last-child {
+        margin-right: 0;
     }
 }
 </style>
