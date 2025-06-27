@@ -209,8 +209,7 @@ def register(request):
                 user_type=user_type
             )
 
-
-            messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
+            # messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
             return redirect('myapp:login')
 
         except Exception as e:
@@ -233,7 +232,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            messages.success(request, 'You are now logged in')
+            # messages.success(request, 'You are now logged in')
             if user.user_type == 'member':
                 return redirect('myapp:attendance')
             else:
@@ -247,7 +246,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    messages.success(request, 'You have been logged out successfully.')
+    # messages.success(request, 'You have been logged out successfully.')
     return redirect('myapp:home')
 
 
@@ -271,7 +270,7 @@ class MemberDashboardView(LoginRequiredMixin, TemplateView):
 
 
 class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = "dashboard/staff_dashboard.html"
+    template_name = "myapp/staff_dashboard.html"
 
     def test_func(self):
         # Only allow users marked as staff to view this
