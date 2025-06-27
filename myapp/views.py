@@ -228,7 +228,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'You are now logged in')
-            return redirect('myapp:home')
+            return redirect('myapp:attendance')
         else:
             messages.error(request, 'Invalid login credentials')
             return render(request, 'myapp/login.html')

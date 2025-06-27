@@ -39,13 +39,39 @@
                         font-weight: 500;
                         margin-top: 20px;
                         transition: background-color 0.2s;
+                        margin-bottom: 30px;
+                        margin-right: 20px;
                     "
                     onmouseover="this.style.backgroundColor='#218838'"
                     onmouseout="this.style.backgroundColor='#28a745'"
                 >
                     Get Started
                 </a>
-            </div>
+
+                <a
+                href="{% url 'myapp:login' %}"
+                class="wow fadeInUp"
+                data-wow-delay="0.3s"
+                style="
+                    display: inline-block;
+                    background-color: white;
+                    color:rgb(13, 82, 15);
+                    padding: 12px 24px;
+                    border-radius: 6px;
+                    border: 2px solid #4CAF50;
+                    text-decoration: none;
+                    font-size: 14px;
+                    font-weight: 500;
+                    margin: 20px 0 30px;
+                    transition: background-color 0.2s, color 0.2s;
+                "
+                onmouseover="this.style.backgroundColor='#218838'; this.style.color='white';"
+                onmouseout="this.style.backgroundColor='white'; this.style.color='rgb(18, 128, 44)';"
+                >
+                Sign in
+                </a>
+                                
+                            </div>
         </div>
     </div>
 </div>
