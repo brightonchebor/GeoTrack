@@ -154,7 +154,7 @@
                                     <td style="padding: 12px; color: #2c3e50;">{{ member.username }}</td>
                                     <td style="padding: 12px; color: #7f8c8d;">{{ member.email }}</td>
                                     <td style="padding: 12px; text-align: center;">
-                                        {% if member.id in today_attendance|dictsort:"user_id"|map:"user_id" %}
+                                        {% if member.id in present_user_ids %}
                                             <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
                                                 Present
                                             </span>

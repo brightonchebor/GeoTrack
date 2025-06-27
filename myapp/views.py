@@ -234,7 +234,10 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'You are now logged in')
-            return redirect('myapp:attendance')
+            if user.user_type == 'member':
+                return redirect('myapp:attendance')
+            else:
+                return redirect('myapp:staff_dashboard')
         else:
             messages.error(request, 'Invalid login credentials')
             return render(request, 'myapp/login.html')
@@ -268,7 +271,7 @@ class MemberDashboardView(LoginRequiredMixin, TemplateView):
 
 
 class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = "myapp/staff_dashboard.html"
+    template_name = "dashboard/staff_dashboard.html"
 
     def test_func(self):
         # Only allow users marked as staff to view this
@@ -283,9 +286,14 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         ctx["members"] = members
 
         # 2. Today's attendance for all members
-        ctx["today_attendance"] = Attendance.objects.filter(date=today)
+        today_attendance = Attendance.objects.filter(date=today)
+        ctx["today_attendance"] = today_attendance
 
-        # 3. Monthly summary: how many days each member has checked in so far this month
+        # 3. Create a set of user IDs who are present today for easy lookup
+        present_user_ids = set(today_attendance.values_list('user_id', flat=True))
+        ctx["present_user_ids"] = present_user_ids
+
+        # 4. Monthly summary: how many days each member has checked in so far this month
         first_of_month = today.replace(day=1)
         summary = (
             Attendance.objects
@@ -296,7 +304,7 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         )
         ctx["monthly_summary"] = summary
 
-        # 4. (Optional) The defined geofence
+        # 5. (Optional) The defined geofence
         ctx["geofence"] = None
         from .models import Geofence
         try:
