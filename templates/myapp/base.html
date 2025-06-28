@@ -22,9 +22,9 @@
 
 <body>
     <div class="wrapper">
-        <div class="container">
-            <nav class="navbar navbar-default navbar-fixed-top">
-                <div class="container">
+        <div class="container" >
+            <nav class="navbar navbar-default navbar-fixed-top" style="background-color:rgb(238, 234, 234)">
+                <div class="container" > 
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header page-scroll">
                         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
@@ -60,13 +60,14 @@
             </nav>
             <!-- /.navbar-collapse -->
         </div>
+        
         <div class="main app form" id="main">
             {% block content%}
 
             {% endblock %}
 
             <!-- Footer Section -->
-            <div class="footer">
+            <div class="footer" style="background-color:rgb(238, 234, 234)">
                 <div class="container">
                     <div class="col-md-7"> <img src="{% static 'myapp/assets/images/geo.png' %}" width="80" height="30" alt="Image" />
                         <p> Simplify Time Tracking with Location-Based Automation </p>
