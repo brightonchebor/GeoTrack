@@ -101,7 +101,7 @@
                 </h4>
                 
                 {% if monthly_summary %}
-                    <div style="max-height: 300px; overflow-y: auto;">
+                    <div style="max-height: 300px; overflow-y: auto; ">
                         {% for summary in monthly_summary %}
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f1f1;">
                             <div>
@@ -181,7 +181,7 @@
 
     {% if geofence %}
     <!-- Geofence Information -->
-    <div class="row" style="margin-top: 30px; margin-bottom: 30px;">
+    <div class="row" style="margin-top: 40px; margin-bottom: 40px;">
         <div class="col-md-12">
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                 <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center;">
@@ -190,9 +190,10 @@
                 </h4>
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
                     <p style="color: #2c3e50; margin: 0;">
-                        <strong>Location:</strong> {{ geofence.latitude|floatformat:6 }}, {{ geofence.longitude|floatformat:6 }}
-                        <br>
-                        <strong>Radius:</strong> {{ geofence.radius }} meters
+                        <strong>Location:</strong> {{ geofence.office_lat|floatformat:6 }}, {{ geofence.office_long|floatformat:6 }} ({{ geofence.office_name }})
+                        <br/>
+                        <br/>
+                        <strong>Radius:</strong> {{ geofence.geofence_radius }} meters
                     </p>
                 </div>
             </div>

@@ -50,4 +50,4 @@ class GeofenceAdmin(admin.ModelAdmin):
     """
     Admin settings for Geofence model.
     """
-    list_display = ('office_lat', 'office_long', 'geofence_radius')
+    list_display = ('office_lat', 'office_long', 'geofence_radius', 'office_name')
