@@ -5,3 +5,4 @@ psycopg2-binary==2.9.10
 whitenoise==6.8.2
 pillow==11.0.0
 geopy==2.4.1
+gunicorn==21.2.0
