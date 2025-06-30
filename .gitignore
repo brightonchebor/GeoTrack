@@ -3,8 +3,13 @@ db.sqlite3
 index.html
 /MyLocator
 /templates/old
-/static/assets_old
+/templates/accounts/
+/templates/app/
+/templates/users/
+/static/assets
 index.html.fallback
 .env
 /templates/app/check1.html
 /MyLocator/
+/users/
+/accounts/
