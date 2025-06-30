@@ -17,11 +17,9 @@ SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['tailortrack-production.up.railway.app', 'https://tailortrack-production.up.railway.app', 'localhost', '127.0.0.0']
-CSRF_TRUSTED_ORIGINS = ['https://tailortrack-production.up.railway.app']
+ALLOWED_HOSTS = ['geotrack-production.up.railway.app/', 'https://geotrack-production.up.railway.app/', 'localhost', '127.0.0.0']
+CSRF_TRUSTED_ORIGINS = ['https://geotrack-production.up.railway.app/']
 
-ALLOWED_HOSTS= ['*']
-CSRF_TRUSTED_ORIGINS=['*']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
