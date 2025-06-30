@@ -17,8 +17,8 @@ SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['tailortrack-production.up.railway.app', 'https://tailortrack-production.up.railway.app', 'localhost', '127.0.0.0']
+CSRF_TRUSTED_ORIGINS = ['https://tailortrack-production.up.railway.app']
 
 
 INSTALLED_APPS = [
@@ -29,10 +29,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.contrib.humanize',
-
-    # 'app',
-    # 'users',
-    # 'accounts',
+    
     'myapp',
 
     'whitenoise.runserver_nostatic'
@@ -73,10 +70,18 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        # "ENGINE": "django.db.backends.sqlite3",
+        # "NAME": BASE_DIR / "db.sqlite3",
+
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('PG_NAME'),
+        'USER': 'postgres',
+        'PASSWORD': env('PG_PWD'),
+        'HOST': 'gondola.proxy.rlwy.net',
+        'PORT': '46664'
     }
 }
+
 
 
 AUTH_PASSWORD_VALIDATORS = [
