@@ -292,7 +292,14 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         present_user_ids = set(today_attendance.values_list('user_id', flat=True))
         ctx["present_user_ids"] = present_user_ids
 
-        # 4. Monthly summary: how many days each member has checked in so far this month
+        # 4. Calculate counts for dashboard cards
+        total_members = members.count()
+        present_count = len(present_user_ids)  # Number of unique users who checked in today
+        absent_count = total_members - present_count
+        
+        ctx["absent_count"] = absent_count
+
+        # 5. Monthly summary: how many days each member has checked in so far this month
         first_of_month = today.replace(day=1)
         summary = (
             Attendance.objects
