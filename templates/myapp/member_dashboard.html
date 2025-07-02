@@ -12,6 +12,7 @@
         </div>
     </div>
 
+
     <div class="row" style="margin-top: 40px;">
         <!-- Attendance Summary Card -->
         <div class="col-md-4">
@@ -64,7 +65,7 @@
                                 <tr style="background: #f8f9fa;">
                                     <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Date</th>
                                     <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Check-in Time</th>
-                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Location</th>
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Check-out Time</th>
                                     <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Status</th>
                                 </tr>
                             </thead>
@@ -72,22 +73,41 @@
                                 {% for record in attendance_records|slice:":10" %}
                                 <tr style="border-bottom: 1px solid #e9ecef;">
                                     <td style="padding: 12px; color: #2c3e50;">{{ record.date|date:"M d, Y" }}</td>
-                                    <td style="padding: 12px; color: #2c3e50;">{{ record.check_in_time|time:"g:i A" }}</td>
-                                    <td style="padding: 12px; color: #7f8c8d; font-size: 14px;">
-                                        {% if record.latitude and record.longitude %}
-                                            {{ record.latitude|floatformat:4 }}, {{ record.longitude|floatformat:4 }}
+                                    <td style="padding: 12px; color: #2c3e50;">
+                                        {% if record.checkin_time %}
+                                            {{ record.checkin_time|time:"g:i A" }}
                                         {% else %}
-                                            Not recorded
+                                            —
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 12px; color: #2c3e50;">
+                                        {% if record.checkout_time %}
+                                            {{ record.checkout_time|time:"g:i A" }}
+                                        {% else %}
+                                            —
                                         {% endif %}
                                     </td>
                                     <td style="padding: 12px; text-align: center;">
-                                        <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
-                                            Present
-                                        </span>
+                                        {% if not record.checkin_time %}
+                                            <!-- No check-in = Absent -->
+                                            <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                No Show
+                                            </span>
+                                        {% elif record.checkin_time and not record.checkout_time %}
+                                            <!-- Checked in but not checked out = Still working -->
+                                            <span style="background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                In Progress
+                                            </span>
+                                        {% elif record.checkin_time and record.checkout_time %}
+                                            <!-- Both check-in and check-out = Full attendance -->
+                                            <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                Full Day
+                                            </span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
-                            </tbody>
+                            </tbody>                            
                         </table>
                     </div>
                     
