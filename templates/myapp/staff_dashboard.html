@@ -35,11 +35,11 @@
         </div>
 
         <div class="col-md-3">
-            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 30px;">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
                 <div style="background: #e74c3c; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
                     <i class="ion-close-circled"></i>
                 </div>
-                <h3 style="color: #2c3e50; margin-bottom: 27px;">{{ members.count|add:"-"|add:today_attendance.count }}</h3>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">{{ absent_count }}</h3>
                 <p style="color: #7f8c8d; font-size: 14px;">Absent Today</p>
             </div>
         </div>
@@ -57,8 +57,82 @@
         </div>
     </div>
 
+    <!-- All Members List -->
+    <div class="row" style="margin-top: 30px; margin-bottom: 30px;">
+        <div class="col-md-12">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center;">
+                    <i class="ion-person-stalker" style="margin-right: 8px; color: #e74c3c;"></i>
+                    All Team Members
+                </h4>
+                
+                {% if members %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    {% comment %} <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Name</th> {% endcomment %}
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Username</th>
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Email</th>
+                                    <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Today's Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in members %}
+                                <tr style="border-bottom: 1px solid #e9ecef;">
+                                    {% comment %} <td style="padding: 12px; color: #2c3e50;">{{ member.first_name }} {{ member.last_name }}</td> {% endcomment %}
+                                    <td style="padding: 12px; color: #2c3e50;">{{ member.username }}</td>
+                                    <td style="padding: 12px; color: #7f8c8d;">{{ member.email }}</td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        {% if member.id in present_user_ids %}
+                                            <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                Present
+                                            </span>
+                                        {% else %}
+                                            <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                Absent
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="ion-person-stalker" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                        <p>No team members found.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if geofence %}
+    <!-- Geofence Information -->
+    <div class="row" style="margin-top: 30px; margin-bottom: 30px;">
+        <div class="col-md-12">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center;">
+                    <i class="ion-location" style="margin-right: 8px; color: #f39c12;"></i>
+                    Geofence Configuration
+                </h4>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                    <p style="color: #2c3e50; margin: 0;">
+                        <strong>Location:</strong> {{ geofence.office_lat|floatformat:6 }}, {{ geofence.office_long|floatformat:6 }} ({{ geofence.office_name }})
+                        <br/>
+                        <br/>
+                        <strong>Radius:</strong> {{ geofence.geofence_radius }} meters
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Today's Attendance -->
-    <div class="row" style="margin-top: 30px;">
+    <div class="row" style="margin-top: 30px; margin-bottom: 30px;">
         <div class="col-md-6">
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                 <h4 style="color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center;">
@@ -127,78 +201,5 @@
         </div>
     </div>
 
-    <!-- All Members List -->
-    <div class="row" style="margin-top: 30px; margin-bottom: 30px;">
-        <div class="col-md-12">
-            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h4 style="color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center;">
-                    <i class="ion-person-stalker" style="margin-right: 8px; color: #e74c3c;"></i>
-                    All Team Members
-                </h4>
-                
-                {% if members %}
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <thead>
-                                <tr style="background: #f8f9fa;">
-                                    {% comment %} <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Name</th> {% endcomment %}
-                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Username</th>
-                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Email</th>
-                                    <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Today's Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for member in members %}
-                                <tr style="border-bottom: 1px solid #e9ecef;">
-                                    {% comment %} <td style="padding: 12px; color: #2c3e50;">{{ member.first_name }} {{ member.last_name }}</td> {% endcomment %}
-                                    <td style="padding: 12px; color: #2c3e50;">{{ member.username }}</td>
-                                    <td style="padding: 12px; color: #7f8c8d;">{{ member.email }}</td>
-                                    <td style="padding: 12px; text-align: center;">
-                                        {% if member.id in present_user_ids %}
-                                            <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
-                                                Present
-                                            </span>
-                                        {% else %}
-                                            <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
-                                                Absent
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
-                        <i class="ion-person-stalker" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
-                        <p>No team members found.</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    {% if geofence %}
-    <!-- Geofence Information -->
-    <div class="row" style="margin-top: 40px; margin-bottom: 30px;">
-        <div class="col-md-12">
-            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h4 style="color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center;">
-                    <i class="ion-location" style="margin-right: 8px; color: #f39c12;"></i>
-                    Geofence Configuration
-                </h4>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
-                    <p style="color: #2c3e50; margin: 0;">
-                        <strong>Location:</strong> {{ geofence.office_lat|floatformat:6 }}, {{ geofence.office_long|floatformat:6 }} ({{ geofence.office_name }})
-                        <br/>
-                        <br/>
-                        <strong>Radius:</strong> {{ geofence.geofence_radius }} meters
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}
