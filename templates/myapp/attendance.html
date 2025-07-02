@@ -144,15 +144,32 @@
                                 <div style="color: #666; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Total Time</div>
                                 <div style="color: #28a745; font-size: 24px; font-weight: 600;" id="total-time">
                                     {% if today_attendance and today_attendance.checkin_time and today_attendance.checkout_time %}
-                                        {% with time_diff=today_attendance.checkout_time|timesince:today_attendance.checkin_time %}
-                                            {{ time_diff|default:"—" }}
-                                        {% endwith %}
+                                        <script>
+                                            // Calculate total time on page load
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const checkinTime = new Date("{{ today_attendance.checkin_time|date:'c' }}");
+                                                const checkoutTime = new Date("{{ today_attendance.checkout_time|date:'c' }}");
+                                                
+                                                const totalMinutes = Math.round((checkoutTime - checkinTime) / (1000 * 60));
+                                                const totalHours = Math.floor(totalMinutes / 60);
+                                                const remainingMinutes = totalMinutes % 60;
+                                                
+                                                let totalTimeString;
+                                                if (totalHours > 0) {
+                                                    totalTimeString = `${totalHours}h ${remainingMinutes}m`;
+                                                } else {
+                                                    totalTimeString = `${remainingMinutes}m`;
+                                                }
+                                                
+                                                document.getElementById("total-time").textContent = totalTimeString;
+                                            });
+                                        </script>
                                     {% else %}
                                         —
                                     {% endif %}
                                 </div>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                     
                     {% comment %} {% if today_attendance %}
