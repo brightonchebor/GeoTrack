@@ -22,6 +22,7 @@ CSRF_TRUSTED_ORIGINS = ['https://geotrack-production.up.railway.app']
 
 
 INSTALLED_APPS = [
+    'jazzmin',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -120,3 +121,60 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MY_SECRET_TOKEN = env('MY_SECRET_TOKEN')
 
 AUTH_USER_MODEL = 'myapp.CustomUser'
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Session timeout in seconds (e.g., 60 minutes = 3600 seconds)
+SESSION_COOKIE_AGE = 3600
+
+SESSION_SAVE_EVERY_REQUEST = True
+
+EMAIL_BACKEND = 'core.backends.email_backend.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Attendance System",
+    "topmenu_links": [
+        {"app": "myapp"},
+    ],
+    "show_ui_builder": False,
+
+}
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": True,
+    "brand_small_text": False,
+    "brand_colour": False,
+    "accent": "accent-primary",
+    "navbar": "navbar-white navbar-light",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": False,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": True,
+    "sidebar_nav_legacy_style": True,
+    "sidebar_nav_flat_style": True,
+    "theme": "yeti",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    }
+}
