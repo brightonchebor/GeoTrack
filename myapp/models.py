@@ -1,27 +1,47 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.conf import settings 
+from django.utils.translation import gettext_lazy as _
+from .managers import UserManager
 
-class CustomUser(AbstractUser):
-    USER_TYPE_CHOICES = [
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    
+    CHOICES = (
         ("staff", "Staff"),
         ("member", "Member"),
-    ]
-    user_type = models.CharField(
-        max_length=10,
-        choices=USER_TYPE_CHOICES,
-        default="member",
-        help_text="Determines if the user is staff (admin) or a member."
     )
+    email = models.EmailField(max_length=255, unique=True, verbose_name=_("Email Address"))
+    first_name = models.CharField(max_length=100, verbose_name=_("First Name"))
+    last_name = models.CharField(max_length=100, verbose_name=_("Last Name"))
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(auto_now=True)
+    user_type = models.CharField(max_length=15 ,choices=CHOICES, default='member', db_index=True)
+
+    USERNAME_FIELD = "email"
+
+    REQUIRED_FIELDS = ["first_name", "last_name"]
+
+    objects = UserManager()
 
     def __str__(self):
-        return f"{self.username} ({self.get_user_type_display()})"
-        
-    def save(self, *args, **kwargs):
-        if self.user_type == "staff":
-            self.is_staff = True
-        super().save(*args, **kwargs)
+        return self.email
+
+    @property
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"    
+
+class OneTimePassword(models.Model):
+
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6, unique=True)
+
+    def __srt__(self):
+        return f'{self.user.first_name}-passcode'
 
 class Attendance(models.Model):
 
