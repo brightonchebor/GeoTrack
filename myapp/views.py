@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from datetime import date as date_cls
-from .models import CustomUser as User
+from .models import CustomUser as User, OneTimePassword
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .models import *
@@ -14,23 +14,128 @@ from django.http import (
 from django.utils import timezone
 from geopy.distance import great_circle
 from django.conf import settings
-
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import TemplateView
-
-
+from .utils import send_code_to_user
 
 
 
 def home(request):
    return render(request, 'myapp/home.html')
 
+def register(request):
+    
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        email = request.POST.get('email', '').strip()
+
+        if not all([first_name, last_name, password, confirm_password, email]):
+            messages.error(request, 'All fields are required.')
+            return redirect('myapp:register')
+
+        if password != confirm_password:
+            messages.error(request, 'Password mismatch. Ensure both fields are identical')
+            return redirect('myapp:register')
+
+        try:
+
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'Email already exists. Please use a different email.')
+                return redirect('myapp:register')
+
+            user = User.objects.create_user(
+                first_name=first_name,
+                last_name=last_name,
+                password=password,
+                email=email
+            )
+            send_code_to_user(user.email)
+            messages.success(request, 'Account created successfully! Please check your email for verification code.')
+            return redirect('myapp:otp')
+
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+            return redirect('myapp:register')
+
+    return render(request, 'myapp/signup.html')
+
+def verify_email(request):
+
+    if request.method == 'POST':
+        otpcode = request.POST.get('otp', '').strip()
+
+        if not otpcode:
+            messages.error(request, 'Please enter the verification code.')
+            return redirect('myapp:otp')
+
+        try:
+            otp_obj = OneTimePassword.objects.get(code=otpcode)
+            user = otp_obj.user
+
+            if user.is_verified:
+                messages.info(request, 'Your account is already verified.')
+                return redirect('myapp:login')
+
+            user.is_verified = True
+            user.save()
+
+            messages.success(request, 'Account verified successfully!')
+            return redirect('myapp:login')
+
+        except OneTimePassword.DoesNotExist:
+            messages.error(request, 'Invalid verification code.')
+            return redirect('myapp:otp')
+
+    return render(request, 'myapp/otp.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        email    = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '').strip()
+
+        if not email or not password:
+            messages.error(request, 'Email and password are required.')
+            return render(request, 'myapp/login.html')
+
+        user = authenticate(request, email=email, password=password)
+
+        # 1) Authentication failed?
+        if user is None:
+            messages.error(request, 'Invalid login credentials.')
+            return render(request, 'myapp/login.html')
+
+        # 2) Not yet verified?
+        if not user.is_verified:
+            messages.error(request, 'Please check your email for a verification code before logging in.')
+            return render(request, 'myapp/login.html')
+
+        # 3) OK!  Log them in and redirect based on user_type
+        login(request, user)
+        #messages.success(request, 'You are now logged in.')  # optional
+
+        if user.user_type == 'member':
+            return redirect('myapp:attendance')
+        else:
+            return redirect('myapp:staff_dashboard')
+
+    # GET (or any non-POST) just renders the form
+    return render(request, 'myapp/login.html')
+
+def logout_view(request):
+    logout(request)
+    # messages.success(request, 'You have been logged out successfully.')
+    return redirect('myapp:home')
+
+
 def attendance(request):
     """
     GET:  Render the 'check.html' template, passing in today's Attendance (if any).
     POST: Accept JSON { action, latitude, longitude } via AJAX,
           perform geofence check, create/update Attendance, and return JSON.
-    """
+    """  
 
     user = request.user
 
@@ -172,82 +277,6 @@ def attendance(request):
             content_type="application/json",
         )
 
-def register(request):
-    if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '')
-        confirm_password = request.POST.get('confirm_password', '')
-        email = request.POST.get('email', '').strip()
-        user_type = request.POST.get('user_type', '')
-
-        # Validate required fields
-        if not all([username, password, confirm_password, email]):
-            messages.error(request, 'All fields are required.')
-            return redirect('myapp:register')
-
-        # Check password match
-        if password != confirm_password:
-            messages.error(request, 'Password mismatch. Ensure both fields are identical')
-            return redirect('myapp:register')
-
-        try:
-            # Check if username already exists
-            if User.objects.filter(username=username).exists():
-                messages.error(request, 'Username already exists. Please choose a different username.')
-                return redirect('myapp:register')
-
-            # Check if email already exists
-            if User.objects.filter(email=email).exists():
-                messages.error(request, 'Email already exists. Please use a different email.')
-                return redirect('myapp:register')
-
-            # Create user
-            user = User.objects.create_user(
-                username=username,
-                password=password,
-                email=email
-            )
-
-            # messages.success(request, 'Your profile has been set up! Login and explore your dashboard.')
-            return redirect('myapp:login')
-
-        except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
-            return redirect('myapp:register')
-
-    return render(request, 'myapp/signup.html')
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '')
-
-        # Validate required fields
-        if not username or not password:
-            messages.error(request, 'Username and password are required.')
-            return render(request, 'myapp/login.html')
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
-            # messages.success(request, 'You are now logged in')
-            if user.user_type == 'member':
-                return redirect('myapp:attendance')
-            else:
-                return redirect('myapp:staff_dashboard')
-        else:
-            messages.error(request, 'Invalid login credentials')
-            return render(request, 'myapp/login.html')
-
-    # GET request - show login form
-    return render(request, 'myapp/login.html')
-
-def logout_view(request):
-    logout(request)
-    # messages.success(request, 'You have been logged out successfully.')
-    return redirect('myapp:home')
-
 
 class MemberDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "myapp/member_dashboard.html"
@@ -287,29 +316,36 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         today_attendance = Attendance.objects.filter(date=today)
         ctx["today_attendance"] = today_attendance
 
-        # 3. Create a set of user IDs who are present today for easy lookup
+        # 3. Create a dictionary to map user_id to attendance record for efficient lookup
+        attendance_by_user = {}
+        for attendance in today_attendance:
+            attendance_by_user[attendance.user.id] = attendance
+
+        ctx["attendance_by_user"] = attendance_by_user
+
+        # 4. Create a set of user IDs who are present today for easy lookup
         present_user_ids = set(today_attendance.values_list('user_id', flat=True))
         ctx["present_user_ids"] = present_user_ids
 
-        # 4. Calculate counts for dashboard cards
+        # 5. Calculate counts for dashboard cards
         total_members = members.count()
         present_count = len(present_user_ids)  # Number of unique users who checked in today
         absent_count = total_members - present_count
         
         ctx["absent_count"] = absent_count
 
-        # 5. Monthly summary: how many days each member has checked in so far this month
+        # 6. Monthly summary: how many days each member has checked in so far this month
         first_of_month = today.replace(day=1)
         summary = (
             Attendance.objects
             .filter(date__gte=first_of_month, date__lte=today)
-            .values("user__id", "user__username", "user__first_name", "user__last_name")
+            .values("user__id", "user__first_name", "user__last_name")
             .annotate(days_checked_in=models.Count("id"))
             .order_by("-days_checked_in")
         )
         ctx["monthly_summary"] = summary
 
-        # 5. (Optional) The defined geofence
+        # 7. (Optional) The defined geofence
         ctx["geofence"] = None
         from .models import Geofence
         try:
@@ -318,3 +354,154 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             pass
 
         return ctx
+
+
+# Add these new views to your views.py file
+
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from datetime import timedelta
+import csv
+
+class MemberAttendanceDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = "myapp/member_attendance_detail.html"
+
+    def test_func(self):
+        # Only allow staff to view this
+        return self.request.user.is_staff
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        member_id = self.kwargs.get('member_id')
+        member = get_object_or_404(CustomUser, id=member_id, user_type='member')
+        
+        # Get all attendance records for this member
+        attendance_records = Attendance.objects.filter(user=member).order_by('-date')
+        
+        # Calculate additional data for each record
+        records_with_hours = []
+        total_hours = 0
+        full_days = 0
+        partial_days = 0
+        
+        for record in attendance_records:
+            record_data = record
+            if record.checkin_time and record.checkout_time:
+                # Calculate total hours worked
+                time_diff = record.checkout_time - record.checkin_time
+                hours = time_diff.total_seconds() / 3600
+                record_data.total_hours = hours
+                total_hours += hours
+                full_days += 1
+            elif record.checkin_time:
+                record_data.total_hours = None
+                partial_days += 1
+            else:
+                record_data.total_hours = None
+                
+            records_with_hours.append(record_data)
+        
+        ctx.update({
+            'member': member,
+            'attendance_records': records_with_hours,
+            'total_days': attendance_records.count(),
+            'full_days': full_days,
+            'partial_days': partial_days,
+            'total_hours': total_hours,
+        })
+        
+        return ctx
+
+
+def export_member_attendance_csv(request, member_id):
+    """Export a specific member's attendance data as CSV"""
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Access denied")
+    
+    member = get_object_or_404(CustomUser, id=member_id, user_type='member')
+    attendance_records = Attendance.objects.filter(user=member).order_by('-date')
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{member.first_name}_{member.last_name}_attendance.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow([
+        'Date', 'Day of Week', 'Check In Time', 'Check Out Time', 
+        'Total Hours', 'Status', 
+    ])
+    
+    for record in attendance_records:
+        # Calculate total hours
+        total_hours = ''
+        if record.checkin_time and record.checkout_time:
+            time_diff = record.checkout_time - record.checkin_time
+            total_hours = round(time_diff.total_seconds() / 3600, 2)
+        
+        # Determine status
+        if not record.checkin_time:
+            status = 'No Show'
+        elif record.checkin_time and not record.checkout_time:
+            status = 'In Progress'
+        else:
+            status = 'Full Day'
+        
+        writer.writerow([
+            record.date.strftime('%Y-%m-%d'),
+            record.date.strftime('%A'),
+            record.checkin_time.strftime('%H:%M:%S') if record.checkin_time else '',
+            record.checkout_time.strftime('%H:%M:%S') if record.checkout_time else '',
+            total_hours,
+            status,
+        ])
+    
+    return response
+
+
+def export_all_attendance_csv(request):
+    """Export all members' attendance data as CSV"""
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Access denied")
+    
+    # Get all members and their attendance
+    members = CustomUser.objects.filter(user_type='member')
+    all_attendance = Attendance.objects.select_related('user').order_by('-date', 'user__first_name')
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="all_members_attendance.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow([
+        'First Name', 'Last Name', 'Email', 'Date', 'Day of Week', 
+        'Check In Time', 'Check Out Time', 'Total Hours', 'Status',
+    ])
+    
+    for record in all_attendance:
+        # Calculate total hours
+        total_hours = ''
+        if record.checkin_time and record.checkout_time:
+            time_diff = record.checkout_time - record.checkin_time
+            total_hours = round(time_diff.total_seconds() / 3600, 2)
+        
+        # Determine status
+        if not record.checkin_time:
+            status = 'No Show'
+        elif record.checkin_time and not record.checkout_time:
+            status = 'In Progress'
+        else:
+            status = 'Full Day'
+        
+        writer.writerow([
+            record.user.first_name,
+            record.user.last_name,
+            record.user.email,
+            record.date.strftime('%Y-%m-%d'),
+            record.date.strftime('%A'),
+            record.checkin_time.strftime('%H:%M:%S') if record.checkin_time else '',
+            record.checkout_time.strftime('%H:%M:%S') if record.checkout_time else '',
+            total_hours,
+            status,
+        ])
+    
+    return response
