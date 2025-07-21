@@ -18,6 +18,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import TemplateView
 from .utils import send_code_to_user
 
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from datetime import timedelta
+import csv
+
 
 
 def home(request):
@@ -34,6 +39,10 @@ def register(request):
 
         if not all([first_name, last_name, password, confirm_password, email]):
             messages.error(request, 'All fields are required.')
+            return redirect('myapp:register')
+
+        if len(password) < 8:
+            messages.error(request, 'Password must be at least 8 characters long')
             return redirect('myapp:register')
 
         if password != confirm_password:
@@ -307,13 +316,20 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         today = timezone.localdate()
+        current_staff = self.request.user
 
-        # 1. All members
-        members = CustomUser.objects.filter(user_type="member")
+        # 1. Filter members by department - only show members from the same department as the staff
+        if current_staff.department:
+            members = CustomUser.objects.filter(user_type="member", department=current_staff.department)
+        else:
+            # If staff has no department assigned, show all members (fallback)
+            members = CustomUser.objects.filter(user_type="member")
+        
         ctx["members"] = members
 
-        # 2. Today's attendance for all members
-        today_attendance = Attendance.objects.filter(date=today)
+        # 2. Today's attendance - only for members in the same department
+        member_ids = list(members.values_list('id', flat=True))
+        today_attendance = Attendance.objects.filter(date=today, user_id__in=member_ids)
         ctx["today_attendance"] = today_attendance
 
         # 3. Create a dictionary to map user_id to attendance record for efficient lookup
@@ -327,18 +343,18 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         present_user_ids = set(today_attendance.values_list('user_id', flat=True))
         ctx["present_user_ids"] = present_user_ids
 
-        # 5. Calculate counts for dashboard cards
+        # 5. Calculate counts for dashboard cards - based on department members only
         total_members = members.count()
-        present_count = len(present_user_ids)  # Number of unique users who checked in today
+        present_count = len(present_user_ids)
         absent_count = total_members - present_count
         
         ctx["absent_count"] = absent_count
 
-        # 6. Monthly summary: how many days each member has checked in so far this month
+        # 6. Monthly summary: how many days each member has checked in - department filtered
         first_of_month = today.replace(day=1)
         summary = (
             Attendance.objects
-            .filter(date__gte=first_of_month, date__lte=today)
+            .filter(date__gte=first_of_month, date__lte=today, user_id__in=member_ids)
             .values("user__id", "user__first_name", "user__last_name")
             .annotate(days_checked_in=models.Count("id"))
             .order_by("-days_checked_in")
@@ -353,15 +369,74 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         except Geofence.DoesNotExist:
             pass
 
+        # 8. Add department info to context for display
+        ctx["staff_department"] = current_staff.department
+        ctx["department_display"] = dict(CustomUser.DEPARTMENT_CHOICES).get(current_staff.department, 'No Department')
+
         return ctx
 
-
-# Add these new views to your views.py file
-
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from datetime import timedelta
-import csv
+def export_all_attendance_csv(request):
+    """Export attendance data for members in the same department as the staff user"""
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Access denied")
+    
+    current_staff = request.user
+    
+    # Filter members by department
+    if current_staff.department:
+        members = CustomUser.objects.filter(user_type='member', department=current_staff.department)
+        filename_suffix = f"_{current_staff.department}_department"
+    else:
+        # Fallback: show all members if staff has no department
+        members = CustomUser.objects.filter(user_type='member')
+        filename_suffix = "_all_departments"
+    
+    # Get attendance for filtered members only
+    member_ids = list(members.values_list('id', flat=True))
+    all_attendance = Attendance.objects.filter(user_id__in=member_ids).select_related('user').order_by('-date', 'user__first_name')
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="members_attendance{filename_suffix}.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow([
+        'First Name', 'Last Name', 'Email', 'Department', 'Date', 'Day of Week', 
+        'Check In Time', 'Check Out Time', 'Total Hours', 'Status',
+    ])
+    
+    for record in all_attendance:
+        # Calculate total hours
+        total_hours = ''
+        if record.checkin_time and record.checkout_time:
+            time_diff = record.checkout_time - record.checkin_time
+            total_hours = round(time_diff.total_seconds() / 3600, 2)
+        
+        # Determine status
+        if not record.checkin_time:
+            status = 'No Show'
+        elif record.checkin_time and not record.checkout_time:
+            status = 'In Progress'
+        else:
+            status = 'Full Day'
+        
+        # Get department display name
+        department_display = dict(CustomUser.DEPARTMENT_CHOICES).get(record.user.department, 'No Department')
+        
+        writer.writerow([
+            record.user.first_name,
+            record.user.last_name,
+            record.user.email,
+            department_display,
+            record.date.strftime('%Y-%m-%d'),
+            record.date.strftime('%A'),
+            record.checkin_time.strftime('%H:%M:%S') if record.checkin_time else '',
+            record.checkout_time.strftime('%H:%M:%S') if record.checkout_time else '',
+            total_hours,
+            status,
+        ])
+    
+    return response
 
 class MemberAttendanceDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "myapp/member_attendance_detail.html"
@@ -370,10 +445,28 @@ class MemberAttendanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Templa
         # Only allow staff to view this
         return self.request.user.is_staff
 
+    def get_object(self):
+        """Get the member, ensuring they're in the same department as the staff user"""
+        member_id = self.kwargs.get('member_id')
+        current_staff = self.request.user
+        
+        # Filter by department if staff has a department assigned
+        if current_staff.department:
+            member = get_object_or_404(
+                CustomUser, 
+                id=member_id, 
+                user_type='member',
+                department=current_staff.department
+            )
+        else:
+            # Fallback: allow access to any member if staff has no department
+            member = get_object_or_404(CustomUser, id=member_id, user_type='member')
+        
+        return member
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        member_id = self.kwargs.get('member_id')
-        member = get_object_or_404(CustomUser, id=member_id, user_type='member')
+        member = self.get_object()
         
         # Get all attendance records for this member
         attendance_records = Attendance.objects.filter(user=member).order_by('-date')
@@ -412,13 +505,25 @@ class MemberAttendanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Templa
         
         return ctx
 
-
 def export_member_attendance_csv(request, member_id):
-    """Export a specific member's attendance data as CSV"""
+    """Export a specific member's attendance data as CSV (with department check)"""
     if not request.user.is_staff:
         return HttpResponseForbidden("Access denied")
     
-    member = get_object_or_404(CustomUser, id=member_id, user_type='member')
+    current_staff = request.user
+    
+    # Filter by department if staff has a department assigned
+    if current_staff.department:
+        member = get_object_or_404(
+            CustomUser, 
+            id=member_id, 
+            user_type='member',
+            department=current_staff.department
+        )
+    else:
+        # Fallback: allow access to any member if staff has no department
+        member = get_object_or_404(CustomUser, id=member_id, user_type='member')
+    
     attendance_records = Attendance.objects.filter(user=member).order_by('-date')
     
     # Create CSV response
@@ -428,8 +533,10 @@ def export_member_attendance_csv(request, member_id):
     writer = csv.writer(response)
     writer.writerow([
         'Date', 'Day of Week', 'Check In Time', 'Check Out Time', 
-        'Total Hours', 'Status', 
+        'Total Hours', 'Status', 'Department'
     ])
+    
+    department_display = dict(CustomUser.DEPARTMENT_CHOICES).get(member.department, 'No Department')
     
     for record in attendance_records:
         # Calculate total hours
@@ -453,55 +560,7 @@ def export_member_attendance_csv(request, member_id):
             record.checkout_time.strftime('%H:%M:%S') if record.checkout_time else '',
             total_hours,
             status,
-        ])
-    
-    return response
-
-
-def export_all_attendance_csv(request):
-    """Export all members' attendance data as CSV"""
-    if not request.user.is_staff:
-        return HttpResponseForbidden("Access denied")
-    
-    # Get all members and their attendance
-    members = CustomUser.objects.filter(user_type='member')
-    all_attendance = Attendance.objects.select_related('user').order_by('-date', 'user__first_name')
-    
-    # Create CSV response
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="all_members_attendance.csv"'
-    
-    writer = csv.writer(response)
-    writer.writerow([
-        'First Name', 'Last Name', 'Email', 'Date', 'Day of Week', 
-        'Check In Time', 'Check Out Time', 'Total Hours', 'Status',
-    ])
-    
-    for record in all_attendance:
-        # Calculate total hours
-        total_hours = ''
-        if record.checkin_time and record.checkout_time:
-            time_diff = record.checkout_time - record.checkin_time
-            total_hours = round(time_diff.total_seconds() / 3600, 2)
-        
-        # Determine status
-        if not record.checkin_time:
-            status = 'No Show'
-        elif record.checkin_time and not record.checkout_time:
-            status = 'In Progress'
-        else:
-            status = 'Full Day'
-        
-        writer.writerow([
-            record.user.first_name,
-            record.user.last_name,
-            record.user.email,
-            record.date.strftime('%Y-%m-%d'),
-            record.date.strftime('%A'),
-            record.checkin_time.strftime('%H:%M:%S') if record.checkin_time else '',
-            record.checkout_time.strftime('%H:%M:%S') if record.checkout_time else '',
-            total_hours,
-            status,
+            department_display,
         ])
     
     return response

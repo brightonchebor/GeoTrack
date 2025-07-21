@@ -11,6 +11,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ("staff", "Staff"),
         ("member", "Member"),
     )
+
+    DEPARTMENT_CHOICES = (
+        ('communication', 'Communication'),
+        ('creatives', 'Creatives'),
+        ('tech_department', 'Tech Department'),
+        ('community_experience', 'Community Experience'),
+        ('youth_engagement', 'Youth Engagement'),
+        ('heritage', 'Heritage'),
+        ('admin', 'Admin'),
+        ('finance', 'Finance'),
+        ('entrepreneurship', 'Entrepreneurship'),
+    )
+
     email = models.EmailField(max_length=255, unique=True, verbose_name=_("Email Address"))
     first_name = models.CharField(max_length=100, verbose_name=_("First Name"))
     last_name = models.CharField(max_length=100, verbose_name=_("Last Name"))
@@ -21,6 +34,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     user_type = models.CharField(max_length=15 ,choices=CHOICES, default='member', db_index=True)
+    department = models.CharField(max_length=25, choices=DEPARTMENT_CHOICES, null=True)
 
     USERNAME_FIELD = "email"
 
