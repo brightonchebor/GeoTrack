@@ -27,7 +27,7 @@
                 <div class="attendance-card" style="background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 40px; height: 100%;">
                     <div class="card-header" style="border-bottom: 2px solid #28a745; padding-bottom: 20px; margin-bottom: 30px;">
                         <h3 style="color: #000; font-weight: 600; margin: 0;">
-                            Welcome, {{ user.get_full_name|default:user.username }}
+                            Welcome, {{ user.get_full_name|default:user.first_name }}
                         </h3>
                     </div>
                     
@@ -35,7 +35,7 @@
                         <div class="info-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px 0; border-bottom: 1px solid #eee;">
                             <span style="color: #666; font-weight: 500;">Status:</span>
                             <span class="status-badge" id="location-status" style="background: #000; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px;">
-                                Checking Location...
+                                No Action Yet
                             </span>
                         </div>
                         
@@ -113,11 +113,6 @@
                                         —
                                     {% endif %}
                                 </div>
-                                {% if today_attendance.checkin_latitude and today_attendance.checkin_longitude %}
-                                <small style="color: #999; font-size: 12px;">
-                                    {{ today_attendance.checkin_latitude|floatformat:6 }}°, {{ today_attendance.checkin_longitude|floatformat:6 }}°
-                                </small>
-                                {% endif %}
                             </div>
                         </div>
                         
@@ -131,11 +126,6 @@
                                         —
                                     {% endif %}
                                 </div>
-                                {% if today_attendance.checkout_latitude and today_attendance.checkout_longitude %}
-                                <small style="color: #999; font-size: 12px;">
-                                    {{ today_attendance.checkout_latitude|floatformat:6 }}°, {{ today_attendance.checkout_longitude|floatformat:6 }}°
-                                </small>
-                                {% endif %}
                             </div>
                         </div>
                         
@@ -171,27 +161,6 @@
                             </div>
                         </div>                        
                     </div>
-                    
-                    {% comment %} {% if today_attendance %}
-                    <div class="additional-info" style="margin-top: 30px; padding-top: 30px; border-top: 1px solid #eee;">
-                        <h5 style="color: #000; margin-bottom: 20px;">Additional Information</h5>
-                        <div class="row">
-                            {% if today_attendance.checkin_address %}
-                            <div class="col-md-6 mb-3">
-                                <strong style="color: #000;">Check-in Address:</strong><br>
-                                <small style="color: #666;">{{ today_attendance.checkin_address }}</small>
-                            </div>
-                            {% endif %}
-                            {% if today_attendance.checkout_address %}
-                            <div class="col-md-6 mb-3">
-                                <strong style="color: #000;">Check-out Address:</strong><br>
-                                <small style="color: #666;">{{ today_attendance.checkout_address }}</small>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endif %} {% endcomment %}
-
                 </div>
             </div>
         </div>

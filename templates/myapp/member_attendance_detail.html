@@ -1,0 +1,158 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="margin-top: 100px; min-height: 500px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h2 style="color: #2c3e50; margin-bottom: 10px;">
+                    {{ member.first_name }} {{ member.last_name }} - Attendance Details
+                </h2>
+                <p style="color: #7f8c8d; font-size: 16px;">{{ member.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row" style="margin-top: 40px;">
+        <div class="col-md-3">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #3498db; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
+                    <i class="ion-calendar"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">{{ total_days }}</h3>
+                <p style="color: #7f8c8d; font-size: 14px;">Total Days</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #52c234; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
+                    <i class="ion-checkmark-circled"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">{{ full_days }}</h3>
+                <p style="color: #7f8c8d; font-size: 14px;">Full Days</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #f39c12; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
+                    <i class="ion-clock"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">{{ partial_days }}</h3>
+                <p style="color: #7f8c8d; font-size: 14px;">Partial Days</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-center; margin-bottom: 20px;">
+                <div style="background: #9b59b6; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px;">
+                    <i class="ion-stats-bars"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 5px;">{{ total_hours|floatformat:1 }}h</h3>
+                <p style="color: #7f8c8d; font-size: 14px;">Total Hours</p>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Detailed Attendance Table -->
+    <div class="row" style="margin-bottom: 40px;">
+        <div class="col-md-12">
+            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #2c3e50; margin-bottom: 20px; display: flex; align-items: center;">
+                    <i class="ion-clipboard" style="margin-right: 8px; color: #3498db;"></i>
+                    Detailed Attendance Records
+                </h4>
+                
+                {% if attendance_records %}
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Date</th>
+                                    <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Check In</th>
+                                    <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Check Out</th>
+                                    <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Total Hours</th>
+                                    <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_records %}
+                                <tr style="border-bottom: 1px solid #e9ecef;">
+                                    <td style="padding: 12px; color: #2c3e50; font-weight: 500;">
+                                        {{ record.date|date:"M d, Y" }}
+                                        <br>
+                                        <small style="color: #7f8c8d;">{{ record.date|date:"l" }}</small>
+                                    </td>
+                                    <td style="padding: 12px; text-align: center; color: #155724;">
+                                        {% if record.checkin_time %}
+                                            {{ record.checkin_time|time:"g:i A" }}
+                                        {% else %}
+                                            <span style="color: #dc3545;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 12px; text-align: center; color: #721c24;">
+                                        {% if record.checkout_time %}
+                                            {{ record.checkout_time|time:"g:i A" }}
+                                        {% else %}
+                                            <span style="color: #ffc107;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 12px; text-align: center; font-weight: 500;">
+                                        {% if record.total_hours %}
+                                            {{ record.total_hours|floatformat:1 }}h
+                                        {% else %}
+                                            <span style="color: #6c757d;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        {% if not record.checkin_time %}
+                                            <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                No Show
+                                            </span>
+                                        {% elif record.checkin_time and not record.checkout_time %}
+                                            <span style="background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                In Progress
+                                            </span>
+                                        {% elif record.checkin_time and record.checkout_time %}
+                                            <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                Full Day
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="ion-clipboard" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                        <p>No attendance records found for this member.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row" style="margin-bottom: 40px;">
+        <div class="col-md-12" style="text-align: center;">
+            <a href="{% url 'myapp:staff_dashboard' %}" 
+               style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; margin-right: 10px;">
+                <i class="ion-arrow-left-c" style="margin-right: 5px;"></i>
+                Back to Dashboard
+            </a>
+            <a href="{% url 'myapp:export_member_attendance' member.id %}" 
+               style="background: #28a745; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none;">
+                <i class="ion-download" style="margin-right: 5px;"></i>
+                Download CSV
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

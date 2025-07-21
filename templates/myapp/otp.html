@@ -19,8 +19,9 @@
          data-wow-delay="0s"
          style="text-align: center; margin-bottom: 30px; color: black"
       >
-         Sign in to your GeoTrack account
+         Verify your GeoTrack account
       </h1>
+
       {% if messages %}
          {% for message in messages %}
             <div
@@ -47,6 +48,7 @@
             </div>
          {% endfor %}
       {% endif %}
+
       <div
          style="
             background-color: #ffffff;
@@ -59,25 +61,25 @@
             margin: 0 auto;
          "
       >
-         <form method="post" action="{% url 'myapp:login' %}">
+         <form method="post" action="{% url 'myapp:otp' %}">
             {% csrf_token %}
             <div style="margin-bottom: 20px">
                <label
-                  for="email"
+                  for="otp"
                   style="
                      display: block;
                      margin-bottom: 8px;
                      font-weight: 500;
                      color: #555;
                   "
-                  >Email address</label
+                  >Enter OTP</label
                >
                <input
-                  type="email"
+                  type="text"
                   class="form-control"
-                  id="email"
-                  name="email"
-                  placeholder="you@example.com"
+                  id="otp"
+                  name="otp"
+                  placeholder="123456"
                   required
                   style="
                      width: 100%;
@@ -89,33 +91,6 @@
                />
             </div>
 
-            <div style="margin-bottom: 20px">
-               <label
-                  for="password"
-                  style="
-                     display: block;
-                     margin-bottom: 8px;
-                     font-weight: 500;
-                     color: #555;
-                  "
-                  >Password</label
-               >
-               <input
-                  type="password"
-                  class="form-control"
-                  id="password"
-                  name="password"
-                  placeholder="••••••••"
-                  required
-                  style="
-                     width: 100%;
-                     padding: 12px;
-                     border: 1px solid #ddd;
-                     border-radius: 6px;
-                     font-size: 14px;
-                  "
-               />
-            </div>
 
             <button
                type="submit"
@@ -134,24 +109,9 @@
                onmouseover="this.style.backgroundColor='#218838'"
                onmouseout="this.style.backgroundColor='#28a745'"
             >
-               Sign in
+               Verify Account
             </button>
          </form>
-         <p
-            style="
-               margin-top: 20px;
-               text-align: center;
-               color: #666;
-               font-size: 14px;
-            "
-         >
-            Don't have an account?
-            <a
-               href="{% url 'myapp:register' %}"
-               style="color: #007bff; text-decoration: none"
-               >Sign up here</a
-            >
-         </p>
       </div>
    </div>
 </div>

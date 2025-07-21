@@ -12,6 +12,23 @@
         </div>
     </div>
 
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-md-12">
+            <div style="background: #e8f4fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div>
+                        <strong style="color: #2c3e50;">Department: {{ department_display }}</strong>
+                        <br/>
+                        <br/>
+                        <p style="color: #7f8c8d; margin: 0; font-size: 14px;">
+                            Showing {{ members.count }} member{{ members.count|pluralize }} from your department
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+
     <!-- Statistics Cards -->
     <div class="row" style="margin-top: 40px;">
         <div class="col-md-3">
@@ -57,6 +74,7 @@
         </div>
     </div>
 
+
     <!-- All Members List -->
     <div class="row" style="margin-top: 30px; margin-bottom: 30px;">
         <div class="col-md-12">
@@ -71,8 +89,8 @@
                         <table style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr style="background: #f8f9fa;">
-                                    {% comment %} <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Name</th> {% endcomment %}
-                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Username</th>
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Firstname</th>
+                                    <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Lasttname</th>
                                     <th style="padding: 12px; text-align: left; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Email</th>
                                     <th style="padding: 12px; text-align: center; color: #2c3e50; border-bottom: 2px solid #e9ecef;">Today's Status</th>
                                 </tr>
@@ -80,15 +98,34 @@
                             <tbody>
                                 {% for member in members %}
                                 <tr style="border-bottom: 1px solid #e9ecef;">
-                                    {% comment %} <td style="padding: 12px; color: #2c3e50;">{{ member.first_name }} {{ member.last_name }}</td> {% endcomment %}
-                                    <td style="padding: 12px; color: #2c3e50;">{{ member.username }}</td>
+                                    <td style="padding: 12px; color: #2c3e50;">{{ member.first_name }}</td>
+                                    <td style="padding: 12px; color: #2c3e50;">{{ member.last_name }}</td>
                                     <td style="padding: 12px; color: #7f8c8d;">{{ member.email }}</td>
                                     <td style="padding: 12px; text-align: center;">
                                         {% if member.id in present_user_ids %}
-                                            <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
-                                                Present
-                                            </span>
+                                            <!-- Find the attendance record for this member -->
+                                            {% for attendance in today_attendance %}
+                                                {% if attendance.user.id == member.id %}
+                                                    {% if not attendance.checkin_time %}
+                                                        <!-- No check-in = No Show -->
+                                                        <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                            No Show
+                                                        </span>
+                                                    {% elif attendance.checkin_time and not attendance.checkout_time %}
+                                                        <!-- Checked in but not checked out = In Progress -->
+                                                        <span style="background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                            In Progress
+                                                        </span>
+                                                    {% elif attendance.checkin_time and attendance.checkout_time %}
+                                                        <!-- Both check-in and check-out = Full Day -->
+                                                        <span style="background: #d4edda; color: #155724; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
+                                                            Full Day
+                                                        </span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
                                         {% else %}
+                                            <!-- Member not in present_user_ids = Absent -->
                                             <span style="background: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 500;">
                                                 Absent
                                             </span>
@@ -175,7 +212,7 @@
                 </h4>
                 
                 {% if monthly_summary %}
-                    <div style="max-height: 300px; overflow-y: auto; ">
+                    <div style="max-height: 300px; overflow-y: auto;">
                         {% for summary in monthly_summary %}
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f1f1;">
                             <div>
@@ -183,13 +220,27 @@
                                 <br>
                                 <small style="color: #7f8c8d;">{{ summary.user__username }}</small>
                             </div>
-                            <div style="text-align: right;">
+                            <div style="text-align: right; display: flex; align-items: center; gap: 10px;">
                                 <span style="background: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 15px; font-size: 14px; font-weight: 500;">
                                     {{ summary.days_checked_in }} days
                                 </span>
+                                <a href="{% url 'myapp:member_attendance_detail' summary.user__id %}" 
+                                style="background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center;">
+                                    <i class="ion-eye" style="margin-right: 4px;"></i>
+                                    View Details
+                                </a>
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
+                    
+                    <!-- Add bulk export button -->
+                    <div style="margin-top: 20px; text-align: center; border-top: 1px solid #e9ecef; padding-top: 15px;">
+                        <a href="{% url 'myapp:export_all_attendance' %}" 
+                        style="background: #17a2b8; color: white; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center;">
+                            <i class="ion-download" style="margin-right: 6px;"></i>
+                            Export All Attendance (CSV)
+                        </a>
                     </div>
                 {% else %}
                     <div style="text-align: center; padding: 20px; color: #7f8c8d;">
@@ -198,7 +249,8 @@
                     </div>
                 {% endif %}
             </div>
-        </div>
+        </div>         
+        
     </div>
 
 </div>

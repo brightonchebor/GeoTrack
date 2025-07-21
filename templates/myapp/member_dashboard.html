@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="text-center">
-                <h2 style="color: #2c3e50; margin-bottom: 30px;">Welcome, {{ user.first_name|default:user.username }}!</h2>
+                <h2 style="color: #2c3e50; margin-bottom: 30px;">Welcome, {{ user.first_name|default:user.first_name}}!</h2>
                 <p style="color: #7f8c8d; font-size: 16px;">Track your attendance and view your records</p>
             </div>
         </div>
@@ -43,7 +43,7 @@
                 <div style="background: #e74c3c; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px;">
                     <i class="ion-person"></i>
                 </div>
-                <h4 style="color: #2c3e50; margin-bottom: 10px;">{{ user.username }} </h4>
+                <h4 style="color: #2c3e50; margin-bottom: 10px;">{{ user.first_name }} </h4>
                 <p style="color: #7f8c8d;">{{ user.email }}</p>
             </div>
         </div>

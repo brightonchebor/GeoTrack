@@ -21,9 +21,33 @@
       >
          Create your GeoTrack account
       </h1>
-      {% if messages %} {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-      {% endfor %} {% endif %}
+      
+      {% if messages %}
+         {% for message in messages %}
+            <div
+               style="
+               padding: 0.75rem 1.25rem;
+               margin-bottom: 1rem;
+               border-radius: 0.25rem;
+               {% if 'error' in message.tags %}
+                  border: 1px solid red;
+                  background-color: rgba(255,0,0,0.1);
+                  color: red;
+               {% elif 'success' in message.tags %}
+                  border: 1px solid green;
+                  background-color: rgba(0,128,0,0.1);
+                  color: green;
+               {% else %}
+                  border: 1px solid #777;
+                  background-color: rgba(0,0,0,0.05);
+                  color: #333;
+               {% endif %}
+               "
+            >
+               {{ message }}
+            </div>
+         {% endfor %}
+      {% endif %}
 
       <div
          style="
@@ -39,6 +63,64 @@
       >
          <form method="post" action="{% url 'myapp:register' %}">
             {% csrf_token %}
+            <div style="margin-bottom: 20px">
+               <label
+                  for="first_name"
+                  style="
+                     display: block;
+                     margin-bottom: 8px;
+                     font-weight: 500;
+                     color: #555;
+                  "
+                  >Firstname</label
+               >
+               <input
+                  type="text"
+                  class="form-control"
+                  id="first_name"
+                  name="first_name"
+                  placeholder="Your Firstname"
+                  required
+                  style="
+                     width: 100%;
+                     padding: 12px;
+                     border: 1px solid #ddd;
+                     border-radius: 6px;
+                     font-size: 12px;
+                     color: #333; 
+                  "
+               />
+            </div>
+
+            <div style="margin-bottom: 20px">
+               <label
+                  for="last_name"
+                  style="
+                     display: block;
+                     margin-bottom: 8px;
+                     font-weight: 500;
+                     color: #555;
+                  "
+                  >Lastname</label
+               >
+               <input
+                  type="text"
+                  class="form-control"
+                  id="last_name"
+                  name="last_name"
+                  placeholder="Your Lastname"
+                  required
+                  style="
+                     width: 100%;
+                     padding: 12px;
+                     border: 1px solid #ddd;
+                     border-radius: 6px;
+                     font-size: 12px;
+                     color: #333; 
+                  "
+               />
+            </div>
+
             <div style="margin-bottom: 20px">
                <label
                   for="email"
@@ -63,69 +145,11 @@
                      border: 1px solid #ddd;
                      border-radius: 6px;
                      font-size: 14px;
+                     color: #333; 
                   "
                />
             </div>
-            <div style="margin-bottom: 20px">
-               <label
-                  for="username"
-                  style="
-                     display: block;
-                     margin-bottom: 8px;
-                     font-weight: 500;
-                     color: #555;
-                  "
-                  >Username</label
-               >
-               <input
-                  type="text"
-                  class="form-control"
-                  id="username"
-                  name="username"
-                  placeholder="Your Username"
-                  required
-                  style="
-                     width: 100%;
-                     padding: 12px;
-                     border: 1px solid #ddd;
-                     border-radius: 6px;
-                     font-size: 11px;
-                  "
-               />
-            </div>
-
-            {% comment %} <div style="margin-bottom: 20px">
-               <label
-                  for="role"
-                  style="
-                     display: block;
-                     margin-bottom: 8px;
-                     font-weight: 500;
-                     color: #555;
-                  "
-                  >User Type</label
-               >
-               <select
-                  class="form-control"
-                  id="user_type"
-                  name="user_type"
-                  required
-                  style="
-                     width: 100%;
-                     padding: 12px 16px;
-                     border: 1px solid #ddd;
-                     border-radius: 6px;
-                     font-size: 14px;
-                     background-color: white;
-                     height: 45px;
-                     line-height: 1.4;
-                     box-sizing: border-box;
-                  "
-               >
-                  <option value="member" selected>Member</option>
-                  <option value="staff">Staff</option>
-               </select>
-            </div> {% endcomment %}
+            
             <div style="margin-bottom: 20px">
                <label
                   for="password"
@@ -150,8 +174,12 @@
                      border: 1px solid #ddd;
                      border-radius: 6px;
                      font-size: 14px;
+                     color: #333; 
                   "
                />
+               <small 
+                  style="color: #666; font-size: 12px;"
+                  >Password must be at least 8 characters long</small>
             </div>
             <div style="margin-bottom: 25px">
                <label
@@ -177,6 +205,7 @@
                      border: 1px solid #ddd;
                      border-radius: 6px;
                      font-size: 14px;
+                     color: #333; 
                   "
                />
             </div>
