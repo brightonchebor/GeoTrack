@@ -17,8 +17,8 @@ SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['geotrack-production.up.railway.app', 'https://geotrack-production.up.railway.app', 'localhost', '127.0.0.0']
-CSRF_TRUSTED_ORIGINS = ['https://geotrack-production.up.railway.app']
+ALLOWED_HOSTS = ['geotrack-tw6e.onrender.com', 'https://geotrack-tw6e.onrender.com', 'localhost', '127.0.0.0']
+CSRF_TRUSTED_ORIGINS = ['https://geotrack-tw6e.onrender.com']
 
 
 INSTALLED_APPS = [
