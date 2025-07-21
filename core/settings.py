@@ -43,6 +43,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "myapp.middleware.SessionExpiryMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -125,9 +126,13 @@ AUTH_USER_MODEL = 'myapp.CustomUser'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Session timeout in seconds (e.g., 60 minutes = 3600 seconds)
-SESSION_COOKIE_AGE = 3600
+SESSION_COOKIE_AGE = 1800
 
 SESSION_SAVE_EVERY_REQUEST = True
+
+LOGIN_URL = '/users/login/'
+
+LOGOUT_REDIRECT_URL = '/'
 
 EMAIL_BACKEND = 'core.backends.email_backend.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
