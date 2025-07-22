@@ -3,6 +3,7 @@ from datetime import date as date_cls
 from .models import CustomUser as User, OneTimePassword
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.db import models
 from .models import *
 import json
 from datetime import date as date_cls
@@ -287,7 +288,7 @@ def attendance(request):
             content_type="application/json",
         )
 
-@login_required
+
 class MemberDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "myapp/member_dashboard.html"
 
@@ -306,7 +307,7 @@ class MemberDashboardView(LoginRequiredMixin, TemplateView):
         ).count()
         return ctx
 
-@login_required
+
 class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "myapp/staff_dashboard.html"
 
@@ -440,7 +441,7 @@ def export_all_attendance_csv(request):
     
     return response
 
-@login_required
+
 class MemberAttendanceDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "myapp/member_attendance_detail.html"
 
