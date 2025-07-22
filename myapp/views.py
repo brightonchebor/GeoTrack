@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import TemplateView
 from .utils import send_code_to_user
+from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -138,7 +139,7 @@ def logout_view(request):
     # messages.success(request, 'You have been logged out successfully.')
     return redirect('myapp:home')
 
-
+@login_required
 def attendance(request):
     """
     GET:  Render the 'check.html' template, passing in today's Attendance (if any).
@@ -286,7 +287,7 @@ def attendance(request):
             content_type="application/json",
         )
 
-
+@login_required
 class MemberDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "myapp/member_dashboard.html"
 
@@ -305,7 +306,7 @@ class MemberDashboardView(LoginRequiredMixin, TemplateView):
         ).count()
         return ctx
 
-
+@login_required
 class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "myapp/staff_dashboard.html"
 
@@ -375,6 +376,7 @@ class StaffDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         return ctx
 
+@login_required
 def export_all_attendance_csv(request):
     """Export attendance data for members in the same department as the staff user"""
     if not request.user.is_staff:
@@ -438,6 +440,7 @@ def export_all_attendance_csv(request):
     
     return response
 
+@login_required
 class MemberAttendanceDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "myapp/member_attendance_detail.html"
 
@@ -505,6 +508,7 @@ class MemberAttendanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Templa
         
         return ctx
 
+@login_required
 def export_member_attendance_csv(request, member_id):
     """Export a specific member's attendance data as CSV (with department check)"""
     if not request.user.is_staff:
