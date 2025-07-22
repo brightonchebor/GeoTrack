@@ -15,7 +15,7 @@ environ.Env.read_env(BASE_DIR / '.env')
 
 SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['geotrack-tw6e.onrender.com', 'https://geotrack-tw6e.onrender.com', 'localhost', '127.0.0.0']
 CSRF_TRUSTED_ORIGINS = ['https://geotrack-tw6e.onrender.com']
@@ -126,7 +126,7 @@ AUTH_USER_MODEL = 'myapp.CustomUser'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Session timeout in seconds (e.g., 60 minutes = 3600 seconds)
-SESSION_COOKIE_AGE = 60
+SESSION_COOKIE_AGE = 900
 
 SESSION_SAVE_EVERY_REQUEST = True
 
