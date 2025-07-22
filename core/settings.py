@@ -126,7 +126,7 @@ AUTH_USER_MODEL = 'myapp.CustomUser'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Session timeout in seconds (e.g., 60 minutes = 3600 seconds)
-SESSION_COOKIE_AGE = 100
+SESSION_COOKIE_AGE = 3600
 
 SESSION_SAVE_EVERY_REQUEST = True
 
