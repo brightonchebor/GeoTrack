@@ -1,14 +1,1 @@
-/sites
-index.html
-/MyLocator
-/templates/old
-/templates/accounts/
-/templates/app/
-/templates/users/
-/static/assets
-index.html.fallback
-.env
-/templates/app/check1.html
-/MyLocator/
-/users/
-/accounts/
+db.sqlite3
