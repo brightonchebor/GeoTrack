@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(BASE_DIR / '.env')
 
 
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = "iqk8x6jy#@d-7-6(3x57@j*anw$zl_yrg)8wat$%#)cec_ntc"
 
 DEBUG = env('DEBUG')
 
