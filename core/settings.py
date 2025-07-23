@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import environ
+import dj_database_url
 
 
 env = environ.Env(
@@ -15,7 +16,7 @@ environ.Env.read_env(BASE_DIR / '.env')
 
 SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['geotrack-tw6e.onrender.com', 'https://geotrack-tw6e.onrender.com', 'localhost', '127.0.0.0']
 CSRF_TRUSTED_ORIGINS = ['https://geotrack-tw6e.onrender.com']
@@ -69,15 +70,33 @@ TEMPLATES = [
 WSGI_APPLICATION = "core.wsgi.application"
 
 
+if DEBUG:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-
+        }
     }
-}
-
+else:
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': env('DBNAME'),
+    #         'USER': env('USER'),
+    #         'PASSWORD': env('PASSWORD'),
+    #         'HOST': env('HOST'),
+    #         'PORT': env('PORT')
+    
+    #     }
+    # }
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }    
 
 
 AUTH_PASSWORD_VALIDATORS = [
