@@ -75,29 +75,19 @@ if DEBUG:
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
-
         }
     }
 else:
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #         'NAME': env('DBNAME'),
-    #         'USER': env('USER'),
-    #         'PASSWORD': env('PASSWORD'),
-    #         'HOST': env('HOST'),
-    #         'PORT': env('PORT')
-    
-    #     }
-    # }
     DATABASES = {
         'default': dj_database_url.config(
             default=env('DATABASE_URL'),
             conn_max_age=600,
-            ssl_require=True
         )
-    }    
-
+    }
+    # Add SSL requirement separately if needed
+    DATABASES['default']['OPTIONS'] = {
+        'sslmode': 'require',
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -201,4 +191,32 @@ JAZZMIN_UI_TWEAKS = {
         "danger": "btn-danger",
         "success": "btn-success"
     }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
 }
