@@ -10,7 +10,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "iqk8x6jy#@d-7-6(3x57@j*anw$zl_yrg)8wat$%#)cec_ntc"
 
 
-DEBUG = False
+DEBUG = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
 
 ALLOWED_HOSTS = ['*']
 # CSRF_TRUSTED_ORIGINS = ['https://geotrack-production.up.railway.app']

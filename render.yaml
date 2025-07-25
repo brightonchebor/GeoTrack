@@ -4,4 +4,4 @@ services:
     name: core
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'python -m gunicorn core.asgi:application -k uvicorn.workers.UvicornWorker' 
+    startCommand: 'python -m gunicorn core.wsgi:application -k uvicorn.workers.UvicornWorker' 
