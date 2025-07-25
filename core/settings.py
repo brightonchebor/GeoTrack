@@ -1,26 +1,19 @@
 from pathlib import Path
 import os
-import environ
 import dj_database_url
+from dotenv import load_dotenv
 
-
-env = environ.Env(
-    # Set casting, default value
-    DEBUG = (bool, False)
-)
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(BASE_DIR / '.env')
-
-
 SECRET_KEY = "iqk8x6jy#@d-7-6(3x57@j*anw$zl_yrg)8wat$%#)cec_ntc"
 
-DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.0', 'https://geotrack-production.up.railway.app', 'geotrack-production.up.railway.app']
-CSRF_TRUSTED_ORIGINS = ['https://geotrack-production.up.railway.app']
+DEBUG = False
 
+ALLOWED_HOSTS = ['*']
+# CSRF_TRUSTED_ORIGINS = ['https://geotrack-production.up.railway.app']
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -69,26 +62,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-
-if DEBUG:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
-else:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=env('DATABASE_URL'),
-            conn_max_age=600,
-        )
-    }
-    # Add SSL requirement separately if needed
-    DATABASES['default']['OPTIONS'] = {
-        'sslmode': 'require',
-    }
-
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+    )
+}
+  
+   
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -104,7 +85,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "Africa/Nairobi"
@@ -112,8 +92,6 @@ TIME_ZONE = "Africa/Nairobi"
 USE_I18N = True
 
 USE_TZ = True
-
-
 
 STATIC_URL = "static/"
 
@@ -128,7 +106,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-MY_SECRET_TOKEN = env('MY_SECRET_TOKEN')
+# Environment variables
+MY_SECRET_TOKEN = os.getenv('MY_SECRET_TOKEN')
 
 AUTH_USER_MODEL = 'myapp.CustomUser'
 
@@ -143,15 +122,15 @@ LOGIN_URL = '/users/login/'
 
 LOGOUT_REDIRECT_URL = '/'
 
+# Email configuration
 EMAIL_BACKEND = 'core.backends.email_backend.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
 
 JAZZMIN_SETTINGS = {
     "site_title": "Attendance System",
@@ -159,8 +138,8 @@ JAZZMIN_SETTINGS = {
         {"app": "myapp"},
     ],
     "show_ui_builder": False,
-
 }
+
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
     "footer_small_text": False,
@@ -192,4 +171,3 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success"
     }
 }
-
