@@ -71,12 +71,6 @@
                                     Check Out
                                 </button>
                             </div>
-                            <div class="col-12 text-center mt-3">
-                                <button type="button" class="btn btn-outline-warning" id="location-help-btn" 
-                                        style="padding: 10px 20px; border-radius: 6px; font-size: 14px; display: none;">
-                                    📍 Location Not Working? Get Help
-                                </button>
-                            </div>
                         </div>
                     </div>   
 
@@ -208,17 +202,12 @@
     background: #dc3545 !important;
 }
 
-.status-badge.getting-location {
-    background: #ffc107 !important;
-    color: #000 !important;
-}
-
 .log-item:hover {
     border-color: #28a745 !important;
     box-shadow: 0 5px 15px rgba(40, 167, 69, 0.1);
 }
 
-/* Mobile-specific styles */
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .hero-section h1 {
         font-size: 36px !important;
@@ -245,21 +234,6 @@
     .info-row span:first-child {
         margin-bottom: 5px;
     }
-    
-    .status-badge {
-        font-size: 12px !important;
-        padding: 6px 12px !important;
-    }
-    
-    #current-location {
-        font-size: 12px !important;
-        word-break: break-all;
-    }
-    
-    .mobile-instructions {
-        margin: 10px !important;
-        padding: 15px !important;
-    }
 }
 
 @media (max-width: 576px) {
@@ -274,7 +248,9 @@
     .log-item {
         margin-bottom: 20px;
     }
-    
+}
+/* Mobile button fixes */
+@media (max-width: 576px) {
     .btn-checkin, .btn-checkout {
         padding: 15px 10px !important;
         font-size: 15px !important;
@@ -288,7 +264,6 @@
         font-size: 14px !important;
     }
 }
-
 @media (max-width: 576px) {
     .action-buttons .row {
         display: flex !important;
@@ -309,13 +284,12 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
-// Go Maps Pro setup (disabled for quick fix)
+// Go Maps Pro setup
 const GOMAPS_PRO_API_KEY = "{{ my_secret_token|escapejs }}";
 
 let map;
 let userMarker;
 let checkInTime = null;
-let locationCountdownInterval = null;
 
 // Get initial state from backend data
 const hasCheckedIn = {% if today_attendance.checkin_time %}true{% else %}false{% endif %};
@@ -338,113 +312,8 @@ const hasCheckedOut = {% if today_attendance.checkout_time %}true{% else %}false
   alert("Geofence is not configured. Please contact administrator.");
 {% endif %}
 
-// Device detection functions
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-function isIOS() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
-}
-
-function isAndroid() {
-    return /Android/.test(navigator.userAgent);
-}
-
-// Get optimal location options based on device
-function getOptimalLocationOptions() {
-    const isMobile = isMobileDevice();
-    
-    if (isMobile) {
-        return {
-            enableHighAccuracy: false,  // Better for mobile battery
-            timeout: isIOS() ? 45000 : 30000,  // iOS needs more time
-            maximumAge: 300000  // 5 minutes for mobile
-        };
-    } else {
-        return {
-            enableHighAccuracy: true,   // Desktop can handle high accuracy
-            timeout: 15000,
-            maximumAge: 60000
-        };
-    }
-}
-
-// Show device-specific help
-function showDeviceSpecificHelp() {
-    let instructions = "";
-    
-    if (isIOS()) {
-        instructions = "For iPhone/iPad:\n• Go to Settings → Safari → Location → While Using App\n• Enable 'Precise Location'\n• Disable 'Low Power Mode' temporarily\n• Make sure you're using HTTPS (secure connection)";
-    } else if (isAndroid()) {
-        instructions = "For Android:\n• Go to Settings → Location → Mode → High Accuracy\n• Allow location access for your browser\n• Disable battery optimization for browser\n• Clear browser cache and try again";
-    } else {
-        instructions = "For desktop:\n• Click 'Allow' when browser asks for location\n• Check if location services are enabled in OS settings\n• Make sure you're using HTTPS (secure connection)";
-    }
-    
-    alert("Location Help:\n\n" + instructions + "\n\nThen refresh the page and try again.");
-}
-
-// Progressive loading with countdown
-function showLocationProgress(action) {
-    const statusElement = document.getElementById("location-status");
-    const isMobile = isMobileDevice();
-    let countdown = isMobile ? (isIOS() ? 45 : 30) : 15;
-    
-    statusElement.textContent = `Getting location... (${countdown}s)`;
-    statusElement.className = "status-badge getting-location";
-    
-    locationCountdownInterval = setInterval(() => {
-        countdown--;
-        if (countdown > 0) {
-            statusElement.textContent = `Getting location... (${countdown}s)`;
-        } else {
-            statusElement.textContent = "Location taking longer than usual...";
-            clearInterval(locationCountdownInterval);
-        }
-    }, 1000);
-}
-
-function clearLocationProgress() {
-    if (locationCountdownInterval) {
-        clearInterval(locationCountdownInterval);
-        locationCountdownInterval = null;
-    }
-}
-
-// Fallback location request with relaxed settings
-function fallbackLocationRequest(action) {
-    const statusElement = document.getElementById("location-status");
-    statusElement.textContent = "Trying alternative location method...";
-    statusElement.className = "status-badge getting-location";
-    
-    const fallbackOptions = {
-        enableHighAccuracy: false,
-        timeout: 60000,        // Very long timeout for slow connections
-        maximumAge: 600000     // Accept even 10-minute-old location
-    };
-    
-    navigator.geolocation.getCurrentPosition(
-        function(position) {
-            console.log("Fallback location successful");
-            handleLocationSuccess(position, action);
-        },
-        function(error) {
-            handleLocationError(error, true); // Pass true to indicate this was fallback
-        },
-        fallbackOptions
-    );
-}
-
 document.addEventListener("DOMContentLoaded", function() {
     updateButtonStates();
-    
-    // Initialize mobile optimizations
-    if (isMobileDevice()) {
-        console.log("Mobile device detected, applying mobile optimizations");
-        document.getElementById("location-help-btn").style.display = "inline-block";
-        document.getElementById("location-help-btn").addEventListener("click", showDeviceSpecificHelp);
-    }
     
     setTimeout(function() {
         initMap();
@@ -518,32 +387,19 @@ function initMap() {
 
 function getCurrentLocationAndCheckIn() {
     if ("geolocation" in navigator) {
-        showLocationProgress("checkin");
-        
-        const options = getOptimalLocationOptions();
-        
+        document.getElementById("location-status").textContent = "Getting location...";
         navigator.geolocation.getCurrentPosition(
             function(position) {
-                clearLocationProgress();
                 handleLocationSuccess(position, "checkin");
             },
             function(error) {
-                clearLocationProgress();
-                if (error.code === error.TIMEOUT && isMobileDevice()) {
-                    // Show device-specific help for mobile timeout
-                    const retry = confirm("Location is taking too long on mobile device. Would you like to see device-specific setup instructions?");
-                    if (retry) {
-                        showDeviceSpecificHelp();
-                    } else {
-                        console.log("User declined help, trying fallback...");
-                        fallbackLocationRequest("checkin");
-                    }
-                } else {
-                    console.log("First location attempt failed, trying fallback...");
-                    fallbackLocationRequest("checkin");
-                }
+                handleLocationError(error);
             },
-            options
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000,
+            }
         );
     } else {
         alert("Geolocation is not supported by your browser.");
@@ -552,121 +408,111 @@ function getCurrentLocationAndCheckIn() {
 
 function getCurrentLocationAndCheckOut() {
     if ("geolocation" in navigator) {
-        showLocationProgress("checkout");
-        
-        const options = getOptimalLocationOptions();
-        
+        document.getElementById("location-status").textContent = "Getting location...";
         navigator.geolocation.getCurrentPosition(
             function(position) {
-                clearLocationProgress();
                 handleLocationSuccess(position, "checkout");
             },
             function(error) {
-                clearLocationProgress();
-                if (error.code === error.TIMEOUT && isMobileDevice()) {
-                    // Show device-specific help for mobile timeout
-                    const retry = confirm("Location is taking too long on mobile device. Would you like to see device-specific setup instructions?");
-                    if (retry) {
-                        showDeviceSpecificHelp();
-                    } else {
-                        console.log("User declined help, trying fallback...");
-                        fallbackLocationRequest("checkout");
-                    }
-                } else {
-                    console.log("First location attempt failed, trying fallback...");
-                    fallbackLocationRequest("checkout");
-                }
+                handleLocationError(error);
             },
-            options
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000,
+            }
         );
     } else {
         alert("Geolocation is not supported by your browser.");
     }
 }
 
-// QUICK FIX: Skip geocoding, use coordinates directly
 function handleLocationSuccess(position, action) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const accuracy = position.coords.accuracy;
     
-    // Skip geocoding - use coordinates directly
-    const address = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
-    document.getElementById("current-location").textContent = address;
-    document.getElementById("gps-accuracy").textContent = `±${Math.round(accuracy)} meters`;
+    const geocodingUrl = `https://api.gomaps.pro/v1/geocode/reverse?location=${latitude},${longitude}&key=${GOMAPS_PRO_API_KEY}`;
     
-    const distance = calculateDistance(latitude, longitude, ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng);
-    const isInZone = distance <= ALLOWED_RADIUS;
-    
-    const statusElement = document.getElementById("location-status");
-    if (isInZone) {
-        statusElement.textContent = "Inside Allowed Zone";
-        statusElement.className = "status-badge inside-zone";
-    } else {
-        statusElement.textContent = "Outside Allowed Zone";
-        statusElement.className = "status-badge outside-zone";
-    }
-    
-    if (userMarker) {
-        userMarker.remove();
-    }
-    
-    userMarker = L.marker([latitude, longitude]).addTo(map)
-        .bindPopup("Your Current Location")
-        .openPopup();
-    
-    const bounds = L.latLngBounds([
-        [latitude, longitude],
-        [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng]
-    ]);
-    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 17 });
-    
-    if (isInZone) {
-        if (action === "checkin") {
-            performCheckIn();
-            saveCheckInOut(latitude, longitude, address, "checkin");
-        } else if (action === "checkout") {
-            performCheckOut();
-            saveCheckInOut(latitude, longitude, address, "checkout");
-        }
-    } else {
-        alert(`You are ${Math.round(distance)}m away from the allowed zone. Please move closer to check ${action === "checkin" ? "in" : "out"}.`);
-    }
+    fetch(geocodingUrl)
+        .then((response) => response.json())
+        .then((data) => {
+            let address = "Unknown location";
+            if (data.results && data.results.length > 0) {
+                address = data.results[0].formatted_address;
+            } else if (data.error_message) {
+                console.error("Geocoding API error:", data.error_message);
+            }
+            
+            document.getElementById("current-location").textContent = address;
+            document.getElementById("gps-accuracy").textContent = `±${Math.round(accuracy)} meters`;
+            
+            const distance = calculateDistance(latitude, longitude, ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng);
+            const isInZone = distance <= ALLOWED_RADIUS;
+            
+            const statusElement = document.getElementById("location-status");
+            if (isInZone) {
+                statusElement.textContent = "Inside Allowed Zone";
+                statusElement.className = "status-badge inside-zone";
+            } else {
+                statusElement.textContent = "Outside Allowed Zone";
+                statusElement.className = "status-badge outside-zone";
+            }
+            
+            if (userMarker) {
+                userMarker.remove();
+            }
+            
+            userMarker = L.marker([latitude, longitude]).addTo(map)
+                .bindPopup("Your Current Location")
+                .openPopup();
+            
+            const bounds = L.latLngBounds([
+                [latitude, longitude],
+                [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng]
+            ]);
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 17 });
+            
+            if (isInZone) {
+                if (action === "checkin") {
+                    performCheckIn();
+                    saveCheckInOut(latitude, longitude, address, "checkin");
+                } else if (action === "checkout") {
+                    performCheckOut();
+                    saveCheckInOut(latitude, longitude, address, "checkout");
+                }
+            } else {
+                alert(`You are ${Math.round(distance)}m away from the allowed zone. Please move closer to check ${action === "checkin" ? "in" : "out"}.`);
+            }
+        })
+        .catch((error) => {
+            console.error("Geocoding fetch error:", error);
+            document.getElementById("current-location").textContent = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
+            document.getElementById("gps-accuracy").textContent = `±${Math.round(accuracy)} meters`;
+            alert("Failed to fetch address. Using coordinates instead.");
+        });
 }
 
-// Enhanced error handling
-function handleLocationError(error, isFallback = false) {
+function handleLocationError(error) {
     let errorMessage = "";
-    let userFriendlyMessage = "";
-    
     switch (error.code) {
         case error.PERMISSION_DENIED:
-            errorMessage = "Location access denied";
-            userFriendlyMessage = "Please enable location services for this website in your browser settings and refresh the page.";
+            errorMessage = "Location access denied. Please enable location services.";
             break;
         case error.POSITION_UNAVAILABLE:
-            errorMessage = "Location information is unavailable";
-            userFriendlyMessage = "Unable to determine your location. Please check your GPS/location settings and try again.";
+            errorMessage = "Location information is unavailable.";
             break;
         case error.TIMEOUT:
-            errorMessage = "Location request timed out";
-            if (isFallback) {
-                userFriendlyMessage = "Location is taking too long to load. Please:\n\n1. Make sure you're connected to WiFi or have good mobile signal\n2. Enable 'High Accuracy' location mode in your phone settings\n3. Try moving to an area with better GPS signal (near a window or outside)\n4. Refresh the page and try again";
-            } else {
-                userFriendlyMessage = "Location is taking longer than expected. Trying alternative method...";
-                return; // Don't show alert yet, let fallback try
-            }
+            errorMessage = "Location request timed out.";
             break;
         default:
-            errorMessage = "An unknown location error occurred";
-            userFriendlyMessage = "Something went wrong getting your location. Please refresh the page and try again.";
+            errorMessage = "An unknown error occurred.";
             break;
     }
     
-    console.error("Location error:", errorMessage, error);
     document.getElementById("location-status").textContent = "Location Error";
     document.getElementById("location-status").className = "status-badge outside-zone";
-    alert(userFriendlyMessage);
+    alert(errorMessage);
 }
 
 function performCheckIn() {
