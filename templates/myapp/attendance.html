@@ -284,7 +284,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
-// Go Maps Pro setup
+// Go Maps Pro setup (disabled for quick fix)
 const GOMAPS_PRO_API_KEY = "{{ my_secret_token|escapejs }}";
 
 let map;
@@ -427,70 +427,54 @@ function getCurrentLocationAndCheckOut() {
     }
 }
 
+// QUICK FIX: Skip geocoding, use coordinates directly
 function handleLocationSuccess(position, action) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
     const accuracy = position.coords.accuracy;
     
-    const geocodingUrl = `https://api.gomaps.pro/v1/geocode/reverse?location=${latitude},${longitude}&key=${GOMAPS_PRO_API_KEY}`;
+    // Skip geocoding - use coordinates directly
+    const address = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
+    document.getElementById("current-location").textContent = address;
+    document.getElementById("gps-accuracy").textContent = `±${Math.round(accuracy)} meters`;
     
-    fetch(geocodingUrl)
-        .then((response) => response.json())
-        .then((data) => {
-            let address = "Unknown location";
-            if (data.results && data.results.length > 0) {
-                address = data.results[0].formatted_address;
-            } else if (data.error_message) {
-                console.error("Geocoding API error:", data.error_message);
-            }
-            
-            document.getElementById("current-location").textContent = address;
-            document.getElementById("gps-accuracy").textContent = `±${Math.round(accuracy)} meters`;
-            
-            const distance = calculateDistance(latitude, longitude, ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng);
-            const isInZone = distance <= ALLOWED_RADIUS;
-            
-            const statusElement = document.getElementById("location-status");
-            if (isInZone) {
-                statusElement.textContent = "Inside Allowed Zone";
-                statusElement.className = "status-badge inside-zone";
-            } else {
-                statusElement.textContent = "Outside Allowed Zone";
-                statusElement.className = "status-badge outside-zone";
-            }
-            
-            if (userMarker) {
-                userMarker.remove();
-            }
-            
-            userMarker = L.marker([latitude, longitude]).addTo(map)
-                .bindPopup("Your Current Location")
-                .openPopup();
-            
-            const bounds = L.latLngBounds([
-                [latitude, longitude],
-                [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng]
-            ]);
-            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 17 });
-            
-            if (isInZone) {
-                if (action === "checkin") {
-                    performCheckIn();
-                    saveCheckInOut(latitude, longitude, address, "checkin");
-                } else if (action === "checkout") {
-                    performCheckOut();
-                    saveCheckInOut(latitude, longitude, address, "checkout");
-                }
-            } else {
-                alert(`You are ${Math.round(distance)}m away from the allowed zone. Please move closer to check ${action === "checkin" ? "in" : "out"}.`);
-            }
-        })
-        .catch((error) => {
-            console.error("Geocoding fetch error:", error);
-            document.getElementById("current-location").textContent = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
-            document.getElementById("gps-accuracy").textContent = `±${Math.round(accuracy)} meters`;
-            alert("Failed to fetch address. Using coordinates instead.");
-        });
+    const distance = calculateDistance(latitude, longitude, ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng);
+    const isInZone = distance <= ALLOWED_RADIUS;
+    
+    const statusElement = document.getElementById("location-status");
+    if (isInZone) {
+        statusElement.textContent = "Inside Allowed Zone";
+        statusElement.className = "status-badge inside-zone";
+    } else {
+        statusElement.textContent = "Outside Allowed Zone";
+        statusElement.className = "status-badge outside-zone";
+    }
+    
+    if (userMarker) {
+        userMarker.remove();
+    }
+    
+    userMarker = L.marker([latitude, longitude]).addTo(map)
+        .bindPopup("Your Current Location")
+        .openPopup();
+    
+    const bounds = L.latLngBounds([
+        [latitude, longitude],
+        [ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng]
+    ]);
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 17 });
+    
+    if (isInZone) {
+        if (action === "checkin") {
+            performCheckIn();
+            saveCheckInOut(latitude, longitude, address, "checkin");
+        } else if (action === "checkout") {
+            performCheckOut();
+            saveCheckInOut(latitude, longitude, address, "checkout");
+        }
+    } else {
+        alert(`You are ${Math.round(distance)}m away from the allowed zone. Please move closer to check ${action === "checkin" ? "in" : "out"}.`);
+    }
 }
 
 function handleLocationError(error) {
