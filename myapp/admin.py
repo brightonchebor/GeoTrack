@@ -11,6 +11,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         'is_verified',
         'department',
         'user_type',
+        'last_login',
     )
     list_filter = (
         'is_staff',

@@ -84,7 +84,13 @@ DATABASES = {
         conn_max_age=600,
     )
 }
-  
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }  
    
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -161,22 +167,22 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": False,
     "body_small_text": True,
     "brand_small_text": False,
-    "brand_colour": False,
-    "accent": "accent-primary",
-    "navbar": "navbar-white navbar-light",
+    "brand_colour": "navbar-primary",
+    "accent": "accent-navy",
+    "navbar": "navbar-dark navbar-navy",
     "no_navbar_border": False,
     "navbar_fixed": False,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": False,
-    "sidebar": "sidebar-dark-primary",
+    "sidebar": "sidebar-dark-navy",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": True,
     "sidebar_nav_legacy_style": True,
     "sidebar_nav_flat_style": True,
-    "theme": "yeti",
+    "theme": "cosmo",
     "dark_mode_theme": None,
     "button_classes": {
         "primary": "btn-outline-primary",
