@@ -13,6 +13,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
 
     DEPARTMENT_CHOICES = (
+        ('', '-- Select Department --'),
         ('communication', 'Communication'),
         ('creatives', 'Creatives'),
         ('tech_department', 'Tech Department'),
@@ -34,7 +35,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     user_type = models.CharField(max_length=15 ,choices=CHOICES, default='member', db_index=True)
-    department = models.CharField(max_length=25, choices=DEPARTMENT_CHOICES, null=True)
+    department = models.CharField(max_length=25, choices=DEPARTMENT_CHOICES, null=True, blank=True)
 
     USERNAME_FIELD = "email"
 

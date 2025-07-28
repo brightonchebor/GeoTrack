@@ -7,7 +7,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_display = (
         'email',
         'first_name',
-        'last_name',        # ← our custom column
+        'last_name',        
         'is_verified',
         'department',
         'user_type',
