@@ -18,8 +18,8 @@ def send_code_to_user(email):
     otp_code = generateOtp()
     print(otp_code)
     user = User.objects.get(email=email)
-    current_site = 'myAuth.com'
-    email_body = f'Hi {user.first_name},thanks for for signing up on {current_site} please verify your email \n with the one time passcode {otp_code}'
+    current_site = 'https://geotrack-ten.vercel.app/'
+    email_body = f'Hi {user.first_name},thanks for for signing up on {current_site} please verify your email \n with the one time passcode {otp_code} using this link {current_site}/users/verify-email/'
     from_email = settings.DEFAULT_FROM_EMAIL
 
     OneTimePassword.objects.create(user=user, code=otp_code)
