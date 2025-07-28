@@ -1,5 +1,33 @@
 {% extends "./base.html" %} {% block content %}
 
+<style>
+/* Loader spinner animation */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 2px solid white;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Button loading state */
+.btn-loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-loading:hover {
+    background-color: #28a745 !important;
+}
+</style>
 
 <div
    class="pitch"
@@ -21,7 +49,7 @@
       >
          Verify your GeoTrack account
       </h1>
-
+      
       {% if messages %}
          {% for message in messages %}
             <div
@@ -48,7 +76,7 @@
             </div>
          {% endfor %}
       {% endif %}
-
+      
       <div
          style="
             background-color: #ffffff;
@@ -61,7 +89,7 @@
             margin: 0 auto;
          "
       >
-         <form method="post" action="{% url 'myapp:otp' %}">
+         <form method="post" action="{% url 'myapp:otp' %}" id="otpForm">
             {% csrf_token %}
             <div style="margin-bottom: 20px">
                <label
@@ -81,19 +109,25 @@
                   name="otp"
                   placeholder="123456"
                   required
+                  maxlength="6"
                   style="
                      width: 100%;
                      padding: 12px;
                      border: 1px solid #ddd;
                      border-radius: 6px;
                      font-size: 14px;
+                     text-align: center;
+                     letter-spacing: 2px;
                   "
                />
+               <small 
+                  style="color: #666; font-size: 12px;"
+                  >Enter the 6-digit code sent to your email</small>
             </div>
-
-
+            
             <button
                type="submit"
+               id="verifyBtn"
                style="
                   width: 100%;
                   padding: 14px 20px;
@@ -105,14 +139,87 @@
                   font-weight: 500;
                   cursor: pointer;
                   transition: background-color 0.2s;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
                "
-               onmouseover="this.style.backgroundColor='#218838'"
-               onmouseout="this.style.backgroundColor='#28a745'"
+               onmouseover="if (!this.classList.contains('btn-loading')) this.style.backgroundColor='#218838'"
+               onmouseout="if (!this.classList.contains('btn-loading')) this.style.backgroundColor='#28a745'"
             >
-               Verify Account
+               <span id="btnText">Verify Account</span>
             </button>
          </form>
+         
+         <p
+            style="
+               margin-top: 20px;
+               text-align: center;
+               color: #666;
+               font-size: 14px;
+            "
+         >
+            Didn't receive the code?
+            <a
+               href="#"
+               id="resendLink"
+               style="color: #007bff; text-decoration: none"
+               onclick="resendOTP(event)"
+               >Resend OTP</a
+            >
+         </p>
       </div>
    </div>
 </div>
+
+<script>
+// Main form submission
+document.getElementById('otpForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('verifyBtn');
+    const btnText = document.getElementById('btnText');
+    
+    // Add loading state
+    btn.classList.add('btn-loading');
+    btnText.innerHTML = '<span class="spinner"></span>Verifying...';
+});
+
+// Resend OTP functionality
+function resendOTP(event) {
+    event.preventDefault();
+    const resendLink = document.getElementById('resendLink');
+    
+    // Show loading state for resend link
+    resendLink.innerHTML = '<span class="spinner" style="border-color: rgba(0,123,255,0.3); border-top-color: #007bff; width: 12px; height: 12px; margin-right: 5px;"></span>Sending...';
+    resendLink.style.pointerEvents = 'none';
+    
+    // Simulate resend request (replace with your actual resend logic)
+    setTimeout(() => {
+        resendLink.innerHTML = 'Resend OTP';
+        resendLink.style.pointerEvents = 'auto';
+        
+        // Show success message (you can customize this)
+        alert('OTP has been resent to your email!');
+    }, 2000);
+}
+
+// Auto-format OTP input
+document.getElementById('otp').addEventListener('input', function(e) {
+    // Only allow numbers
+    this.value = this.value.replace(/[^0-9]/g, '');
+    
+    // Limit to 6 digits
+    if (this.value.length > 6) {
+        this.value = this.value.substring(0, 6);
+    }
+});
+
+// Reset button state if form submission fails
+window.addEventListener('load', function() {
+    const btn = document.getElementById('verifyBtn');
+    const btnText = document.getElementById('btnText');
+    
+    btn.classList.remove('btn-loading');
+    btnText.innerHTML = 'Verify Account';
+});
+</script>
+
 {% endblock %}

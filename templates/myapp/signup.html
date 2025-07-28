@@ -1,5 +1,33 @@
 {% extends "./base.html" %} {% block content %}
 
+<style>
+/* Loader spinner animation */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 2px solid white;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Button loading state */
+.btn-loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-loading:hover {
+    background-color: #28a745 !important;
+}
+</style>
 
 <div
    class="pitch"
@@ -61,7 +89,7 @@
             margin: 0 auto;
          "
       >
-         <form method="post" action="{% url 'myapp:register' %}">
+         <form method="post" action="{% url 'myapp:register' %}" id="registerForm">
             {% csrf_token %}
             <div style="margin-bottom: 20px">
                <label
@@ -211,6 +239,7 @@
             </div>
             <button
                type="submit"
+               id="registerBtn"
                style="
                   width: 100%;
                   padding: 14px 20px;
@@ -222,11 +251,14 @@
                   font-weight: 500;
                   cursor: pointer;
                   transition: background-color 0.2s;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
                "
-               onmouseover="this.style.backgroundColor='#218838'"
-               onmouseout="this.style.backgroundColor='#28a745'"
+               onmouseover="if (!this.classList.contains('btn-loading')) this.style.backgroundColor='#218838'"
+               onmouseout="if (!this.classList.contains('btn-loading')) this.style.backgroundColor='#28a745'"
             >
-               Register
+               <span id="btnText">Register</span>
             </button>
          </form>
          <p
@@ -247,4 +279,30 @@
       </div>
    </div>
 </div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('registerBtn');
+    const btnText = document.getElementById('btnText');
+    
+    // Add loading state
+    btn.classList.add('btn-loading');
+    btnText.innerHTML = '<span class="spinner"></span>Creating account...';
+    
+    // Optional: Add a small delay to show the loader (remove in production)
+    // setTimeout(() => {
+    //     this.submit();
+    // }, 500);
+});
+
+// Reset button state if form submission fails (e.g., validation errors)
+window.addEventListener('load', function() {
+    const btn = document.getElementById('registerBtn');
+    const btnText = document.getElementById('btnText');
+    
+    btn.classList.remove('btn-loading');
+    btnText.innerHTML = 'Register';
+});
+</script>
+
 {% endblock %}
