@@ -1,4 +1,5 @@
 {% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,6 +19,7 @@
     <link rel="stylesheet" href="{% static 'myapp/assets/css/ionicons.min.css' %}">
     <!-- Resource style -->
     <link href="{% static 'myapp/assets/css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
+    {% progressive_web_app_meta %}
 </head>
 
 <body>
