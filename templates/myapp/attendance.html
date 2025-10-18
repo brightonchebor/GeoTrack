@@ -175,7 +175,7 @@
 
 <script>
 // Go Maps Pro setup
-const GOMAPS_PRO_API_KEY = "{{ my_secret_token|escapejs }}";
+// const GOMAPS_PRO_API_KEY = "{{ my_secret_token|escapejs }}";
 
 let map;
 let userMarker;
@@ -322,16 +322,42 @@ function handleLocationSuccess(position, action) {
     const longitude = position.coords.longitude;
     const accuracy = position.coords.accuracy;
     
-    const geocodingUrl = `https://api.gomaps.pro/v1/geocode/reverse?location=${latitude},${longitude}&key=${GOMAPS_PRO_API_KEY}`;
+    // Using Nominatim (OpenStreetMap) - FREE, no API key needed
+    const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`;
     
-    fetch(geocodingUrl)
+    fetch(geocodingUrl, {
+        headers: {
+            'User-Agent': 'AttendanceSystem/1.0' // Nominatim requires a user agent
+        }
+    })
         .then((response) => response.json())
         .then((data) => {
             let address = "Unknown location";
-            if (data.results && data.results.length > 0) {
-                address = data.results[0].formatted_address;
-            } else if (data.error_message) {
-                console.error("Geocoding API error:", data.error_message);
+            if (data && data.address) {
+                // Extract only important parts of the address
+                const addr = data.address;
+                const parts = [];
+                
+                // Add building/amenity if available
+                if (addr.amenity) parts.push(addr.amenity);
+                if (addr.building) parts.push(addr.building);
+                
+                // Add road/street
+                if (addr.road) parts.push(addr.road);
+                
+                // Add city/town/suburb (pick first available)
+                if (addr.city) parts.push(addr.city);
+                else if (addr.town) parts.push(addr.town);
+                else if (addr.suburb) parts.push(addr.suburb);
+                
+                // Add county
+                // if (addr.county) parts.push(addr.county);
+                
+                address = parts.length > 0 ? parts.join(", ") : data.display_name;
+            } else if (data && data.display_name) {
+                address = data.display_name;
+            } else if (data.error) {
+                console.error("Geocoding API error:", data.error);
             }
             
             document.getElementById("current-location").textContent = address;
@@ -377,9 +403,26 @@ function handleLocationSuccess(position, action) {
         })
         .catch((error) => {
             console.error("Geocoding fetch error:", error);
-            document.getElementById("current-location").textContent = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
+            // Fallback to coordinates if geocoding fails
+            const coordsAddress = `${latitude.toFixed(6)}° N, ${longitude.toFixed(6)}° E`;
+            document.getElementById("current-location").textContent = coordsAddress;
             document.getElementById("gps-accuracy").textContent = `±${Math.round(accuracy)} meters`;
-            alert("Failed to fetch address. Using coordinates instead.");
+            
+            // Still allow check-in/out with coordinates
+            const distance = calculateDistance(latitude, longitude, ALLOWED_LOCATION.lat, ALLOWED_LOCATION.lng);
+            const isInZone = distance <= ALLOWED_RADIUS;
+            
+            if (isInZone) {
+                if (action === "checkin") {
+                    performCheckIn();
+                    saveCheckInOut(latitude, longitude, coordsAddress, "checkin");
+                } else if (action === "checkout") {
+                    performCheckOut();
+                    saveCheckInOut(latitude, longitude, coordsAddress, "checkout");
+                }
+            } else {
+                alert(`You are ${Math.round(distance)}m away from the allowed zone. Please move closer to check ${action === "checkin" ? "in" : "out"}.`);
+            }
         });
 }
 
