@@ -2,95 +2,133 @@
 {% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <title>geoTrack</title>
-    <link rel="icon" href="{% static 'myapp/assets/images/favicon.png' %}" type="image/png" sizes="16x16">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="iLand Multipurpose Landing Page Template">
-    <meta name="keywords" content="iLand HTML Template, iLand Landing Page, Landing Page Template">
-    <link href="{% static 'myapp/assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="all" />
-    <link href="https://fonts.googleapis.com/css?family=Open%20Sans:300,400,500,600,700" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{% static 'myapp/assets/css/animate.css' %}">
-    <!-- Resource style -->
-    <link rel="stylesheet" href="{% static 'myapp/assets/css/owl.carousel.css' %}">
-    <link rel="stylesheet" href="{% static 'myapp/assets/css/owl.theme.css' %}">
-    <link rel="stylesheet" href="{% static 'myapp/assets/css/ionicons.min.css' %}">
-    <!-- Resource style -->
-    <link href="{% static 'myapp/assets/css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
-    {% progressive_web_app_meta %}
-</head>
-
-<body>
-    <div class="wrapper">
-        <div class="container" >
-            <nav class="navbar navbar-default navbar-fixed-top" style="background-color:rgb(238, 234, 234); ">
-                <div class="container" > 
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                    <div class="navbar-header page-scroll" >
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-                        <a class="navbar-brand page-scroll" href="{% url 'myapp:home' %}" ><img src="{% static 'myapp/assets/images/geo.png' %}" width="105" height="40" alt="geoTrack" /></a>
+    <head>
+        <meta charset="utf-8">
+        <title>geoTrack</title>
+        <link rel="icon"
+              href="{% static 'myapp/assets/images/favicon.png' %}"
+              type="image/png"
+              sizes="16x16">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="iLand Multipurpose Landing Page Template">
+        <meta name="keywords"
+              content="iLand HTML Template, iLand Landing Page, Landing Page Template">
+        <link href="{% static 'myapp/assets/css/bootstrap.min.css' %}"
+              rel="stylesheet"
+              type="text/css"
+              media="all" />
+        <link href="https://fonts.googleapis.com/css?family=Open%20Sans:300,400,500,600,700"
+              rel="stylesheet"
+              type="text/css">
+        <link rel="stylesheet" href="{% static 'myapp/assets/css/animate.css' %}">
+        <!-- Resource style -->
+        <link rel="stylesheet"
+              href="{% static 'myapp/assets/css/owl.carousel.css' %}">
+        <link rel="stylesheet" href="{% static 'myapp/assets/css/owl.theme.css' %}">
+        <link rel="stylesheet"
+              href="{% static 'myapp/assets/css/ionicons.min.css' %}">
+        <!-- Resource style -->
+        <link href="{% static 'myapp/assets/css/style.css' %}"
+              rel="stylesheet"
+              type="text/css"
+              media="all" />
+        {% progressive_web_app_meta %}
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="container">
+                <nav class="navbar navbar-default navbar-fixed-top"
+                     style="background-color:rgb(238, 234, 234)">
+                    <div class="container">
+                        <!-- Brand and toggle get grouped for better mobile display -->
+                        <div class="navbar-header page-scroll">
+                            <button type="button"
+                                    class="navbar-toggle"
+                                    data-toggle="collapse"
+                                    data-target="#bs-example-navbar-collapse-1"
+                                    aria-expanded="false">
+                                <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand page-scroll" href="{% url 'myapp:home' %}">
+                                <img src="{% static 'myapp/assets/images/geo.png' %}"
+                                     width="105"
+                                     height="40"
+                                     alt="geoTrack" />
+                            </a>
+                        </div>
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse navbar-right"
+                             id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                {% if user.is_authenticated %}
+                                    {% if user.user_type == "staff" %}
+                                        <li>
+                                            <a class="page-scroll" href="{% url 'myapp:home' %}">Home</a>
+                                        </li>
+                                        <li>
+                                            <a class="page-scroll" href="{% url 'myapp:staff_dashboard' %}">Dashboard</a>
+                                        </li>
+                                    {% elif user.user_type == "member" %}
+                                        <li>
+                                            <a class="page-scroll" href="{% url 'myapp:home' %}">Home</a>
+                                        </li>
+                                        <li>
+                                            <a class="page-scroll" href="{% url 'myapp:attendance' %}">Attendance</a>
+                                        </li>
+                                        <li>
+                                            <a class="page-scroll" href="{% url 'myapp:member_dashboard' %}">Dashboard</a>
+                                        </li>
+                                    {% endif %}
+                                    <li>
+                                        <a class="page-scroll" href="{% url "myapp:logout" %}">Logout</a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a class="page-scroll" href="{% url 'myapp:home' %}">Home</a>
+                                    </li>
+                                    <li>
+                                        <a class="page-scroll" href="{% url 'myapp:register' %}">Sign Up</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
                     </div>
-                    <!-- Collect the nav links, forms, and other content for toggling -->
-                    <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
-                        <ul class="nav navbar-nav">
-                            {% if user.is_authenticated %}
-                                {% if user.user_type == "staff" %}
-                                        <li><a class="page-scroll" href="{% url 'myapp:home' %}">Home</a></li>
-                                        <li><a class="page-scroll" href="{% url 'myapp:staff_dashboard' %}">Dashboard</a></li>
-                                {% elif user.user_type == "member" %}
-                                        <li><a class="page-scroll" href="{% url 'myapp:home' %}">Home</a></li>
-                                        <li><a class="page-scroll" href="{% url 'myapp:attendance' %}">Attendance</a></li>
-                                        <li><a class="page-scroll" href="{% url 'myapp:member_dashboard' %}">Dashboard</a></li>
-                                {% endif %}                                
-                                <li><a class="page-scroll" href="{% url "myapp:logout" %}">Logout</a></li>
-                            {% else %}
-                                <li><a class="page-scroll" href="{% url 'myapp:home' %}">Home</a></li>
-                                <li><a class="page-scroll" href="{% url 'myapp:register' %}">Sign Up</a></li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            <!-- /.navbar-collapse -->
-        </div>
-        
-        <div class="main app form" id="main">
-            
-            {% block content%}
-
-            {% endblock %}
-
-            <!-- Footer Section -->
-            <div class="footer" style="background-color:rgba(224, 220, 220, 1)">
-                <div class="container">
-                    <div class="col-md-7"> <img src="{% static 'myapp/assets/images/geo.png' %}" width="80" height="30" alt="Image" />
-                        <p> Simplify Time Tracking with Location-Based Automation </p>
-                    </div>
-                    <div class="col-md-5">
-                        <h1>Contact Us</h1>
-                        <p> Contact our 24/7 customer support if you have any <br class="hidden-xs"> questions. We'll help you out. </p>
-                        <a href="mailto:support@gmail.com">contact@geoTrack.com</a>
+                </nav>
+                <!-- /.navbar-collapse -->
+            </div>
+            <div class="main app form" id="main">
+                {% block content %}{% endblock %}
+                <!-- Footer Section -->
+                <div class="footer"
+                     style="background-color: #f8f9fa;
+                            padding: 40px 0;
+                            text-align: center">
+                    <div class="container">
+                        <h3 style="margin-bottom: 10px; font-size: 18px; color: #333;">Contact Us</h3>
+                        <p style="margin-bottom: 15px; color: #666;">Questions? Our 24/7 support team is here to help.</p>
+                        <a href="mailto:contact@geoTrack.com"
+                           style="color: #007bff;
+                                  text-decoration: none">contact@geoTrack.com</a>
+                        <p style="margin-top: 30px; font-size: 14px; color: #999;">© 2025 GeoTrack. All rights reserved.</p>
                     </div>
                 </div>
             </div>
+            <!-- Scroll To Top -->
+            <a id="back-top" class="back-to-top page-scroll" href="#main"> <i class="ion-ios-arrow-thin-up"></i> </a>
+            <!-- Scroll To Top Ends-->
         </div>
-
-        <!-- Scroll To Top -->
-        <a id="back-top" class="back-to-top page-scroll" href="#main"> <i class="ion-ios-arrow-thin-up"></i> </a>
-        <!-- Scroll To Top Ends-->
-    </div>
-    <!-- Main Section -->
+        <!-- Main Section -->
     </div>
     <!-- Wrapper-->
     <!-- Jquery and Js Plugins -->
-    <script type="text/javascript" src="{% static 'myapp/assets/js/jquery-2.1.1.js' %}"></script>
-    <script type="text/javascript" src="{% static 'myapp/assets/js/bootstrap.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'myapp/assets/js/plugins.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'myapp/assets/js/jquery-2.1.1.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'myapp/assets/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'myapp/assets/js/plugins.js' %}"></script>
     <script type="text/javascript" src="{% static 'myapp/assets/js/menu.js' %}"></script>
     <script type="text/javascript" src="{% static 'myapp/assets/js/custom.js' %}"></script>
     <script src="{% static 'myapp/assets/js/jquery.subscribe.js' %}"></script>
 </body>
-
 </html>
